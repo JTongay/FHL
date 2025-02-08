@@ -10,10 +10,11 @@ import {
 } from "@/domain/Team";
 import { fhlDb } from "@fhl/core/src/db";
 import { sql } from "kysely";
+import { jsonArrayFrom } from "kysely/helpers/postgres";
 
 export interface TeamTable {
   id: number;
-  player_ids: number[];
+  players: number[];
   captain_id: number;
   season_id: number;
   created_at: Date;
@@ -25,18 +26,13 @@ export interface TeamTable {
 }
 
 export class TeamRepository {
-  public async getTeamsForSeason(seasonId: string): Promise<SeasonTeam[]> {
+  public async getTeamsForSeasonWithPlayers(
+    seasonId: string,
+  ): Promise<SeasonTeam[]> {
     const result = await fhlDb
       .selectFrom("team_season")
       .innerJoin("teams", "teams.id", "team_season.team_id")
-      .innerJoin(
-        "user_team_season",
-        "user_team_season.team_id",
-        "team_season.team_id",
-      )
       .select([
-        "player_id",
-        "user_team_season.season_id",
         "teams.id",
         "teams.name",
         "teams.league_id",
@@ -45,14 +41,63 @@ export class TeamRepository {
         "team_season.wins",
         "team_season.losses",
         "team_season.captain_id",
+        "team_season.season_id",
       ])
       .where("team_season.season_id", "=", +seasonId)
+      .select(({ eb }) => [
+        jsonArrayFrom(
+          eb
+            .selectFrom("user_team_season")
+            .whereRef("team_id", "=", "team_season.team_id")
+            .select("player_id"),
+        ).as("players"),
+      ])
       .execute();
 
-    const playerIds = result.map((team) => team.player_id);
-    return result.map((team) => {
-      const teamData = { ...team, player_ids: playerIds };
-      return new SeasonTeam(teamData);
+    const playerIds = result.map((team) => {
+      return {
+        ...team,
+        players: team.players.map((player) => player.player_id),
+      };
+    });
+    return playerIds.map((team) => {
+      return new SeasonTeam(team);
+    });
+  }
+
+  public async getTeamsForSeason(seasonId: string): Promise<SeasonTeam[]> {
+    const result = await fhlDb
+      .selectFrom("team_season")
+      .innerJoin("teams", "teams.id", "team_season.team_id")
+      .select([
+        "teams.id",
+        "teams.name",
+        "teams.league_id",
+        "teams.created_at", // TODO Figure out if we want the teams date or the team_season date
+        "teams.updated_at", // TODO Figure out if we want the teams date or the team_season date
+        "team_season.wins",
+        "team_season.losses",
+        "team_season.captain_id",
+        "team_season.season_id",
+      ])
+      .where("team_season.season_id", "=", +seasonId)
+      .select(({ eb }) => [
+        jsonArrayFrom(
+          eb
+            .selectFrom("user_team_season")
+            .whereRef("team_id", "=", "team_season.team_id")
+            .select("player_id"),
+        ).as("players"),
+      ])
+      .execute();
+    const playerIds = result.map((team) => {
+      return {
+        ...team,
+        players: team.players.map((player) => player.player_id),
+      };
+    });
+    return playerIds.map((team) => {
+      return new SeasonTeam(team);
     });
   }
 
@@ -64,16 +109,9 @@ export class TeamRepository {
     teamId: string;
   }): Promise<SeasonTeam> {
     const result = await fhlDb
-      .selectFrom("user_team_season")
-      .innerJoin("teams", "teams.id", "user_team_season.season_id")
-      .innerJoin(
-        "team_season",
-        "team_season.season_id",
-        "user_team_season.season_id",
-      )
+      .selectFrom("team_season")
+      .innerJoin("teams", "teams.id", "team_season.team_id")
       .select([
-        "player_id",
-        "season_id",
         "teams.id",
         "teams.name",
         "teams.league_id",
@@ -82,14 +120,26 @@ export class TeamRepository {
         "team_season.wins",
         "team_season.losses",
         "team_season.captain_id",
+        "team_season.season_id",
       ])
       .where("season_id", "=", +seasonId)
       .where("team_id", "=", +teamId)
-      .execute();
+      .select(({ eb }) => [
+        jsonArrayFrom(
+          eb
+            .selectFrom("user_team_season")
+            .whereRef("team_id", "=", "team_season.team_id")
+            .select("player_id"),
+        ).as("players"),
+      ])
+      .executeTakeFirstOrThrow();
 
-    const playerIds = result.map((team) => team.player_id);
-    const teamData = { ...result[0], player_ids: playerIds };
-    return new SeasonTeam(teamData);
+    const normalized = {
+      ...result,
+      players: result.players.map((player) => player.player_id),
+    };
+
+    return new SeasonTeam(normalized);
   }
 
   public async getLeagueTeams(leagueId: string): Promise<Team[]> {
