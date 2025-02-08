@@ -30,7 +30,7 @@ export class Team {
 
 export class SeasonTeam extends Team {
   captainId: string;
-  memberIds: string[];
+  playerIds: string[];
 
   constructor(table: TeamTable) {
     super({
@@ -42,13 +42,12 @@ export class SeasonTeam extends Team {
       updated_at: table.updated_at,
     });
     this.captainId = table.captain_id.toString();
-    this.memberIds = table.player_ids.map(String);
+    this.playerIds = table.players.map(String);
   }
 }
 
 export class LeagueTeam extends Team {
   captainId: string;
-  memberIds: string[];
   leagueId: string;
 
   constructor(table: TeamTable) {
@@ -61,7 +60,6 @@ export class LeagueTeam extends Team {
       updated_at: table.updated_at,
     });
     this.captainId = table.captain_id.toString();
-    this.memberIds = table.player_ids.map(String);
     this.leagueId = table.league_id.toString();
   }
 }
