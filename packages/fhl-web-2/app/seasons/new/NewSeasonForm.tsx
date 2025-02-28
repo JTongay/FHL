@@ -43,26 +43,6 @@ export function NewSeasonForm({
   submit,
   submitStatus,
 }: Props) {
-  const form = useFormik({
-    initialValues: {
-      startAt: undefined,
-      endAt: undefined,
-      teams: [
-        {
-          id: "",
-          name: "",
-          captain: {
-            id: "",
-            name: "",
-          },
-        },
-      ],
-    },
-    onSubmit(values: FormValues) {
-      console.log(values, "VALUESSS");
-    },
-  });
-
   const addNewTeamToForm = (
     teamsInForm: FormValues["teams"],
     allTeams: Partial<Team>[],
@@ -79,6 +59,7 @@ export function NewSeasonForm({
       // Show an alert or something or just disable the button
     }
 
+    console.log("Adding a new team, all good");
     // All good, add a new section in the formy form
     push({ id: "", name: "", captain: { id: "", name: "" } });
   };
@@ -116,74 +97,76 @@ export function NewSeasonForm({
         console.log(values, "onSubmit");
       }}
     >
-      <form onSubmit={form.handleSubmit}>
-        <div className="flex flex-row justify-center items-center w-full">
-          <div className="mx-12 sm:mx-4 w-[75%]">
-            <div className="flex flex-col gap-y-4">
-              <FieldArray
-                name="teams"
-                render={({ push, remove }) => (
-                  <>
-                    {form.values.teams.map((newTeam, index) => (
-                      <div key={index}>
-                        <SelectInput
-                          {...form.getFieldProps("teams[0].name")}
-                          name={`teams[0].name`}
-                          displayKey="name"
-                          placeholder="Select a Team"
-                          values={teams}
-                        />
-                        <SelectInput
-                          {...form.getFieldProps("teams[0].captain.name")}
-                          name={`teams[0].captain.id`}
-                          renderOption={(user) => (
-                            <span>
-                              {user.gamertag} | {user.fullName}
-                            </span>
-                          )}
-                          placeholder="Select Team Captain"
-                          values={players.data || []}
-                        />
-                        <Button
-                          onClick={() =>
-                            removeTeam(form.values.teams, index, remove)
-                          }
-                        >
-                          Remove team
-                        </Button>
-                      </div>
-                    ))}
-                    <Button
-                      onClick={() =>
-                        addNewTeamToForm(form.values.teams, teams, push)
-                      }
-                    >
-                      Add a team
-                    </Button>
-                  </>
-                )}
-              />
-              <div className="flex flex-row gap-x-4">
-                <div className="flex-grow w-full">
-                  <DatePicker
-                    placeholder="Start Date"
-                    className="w-full"
-                    name="startAt"
-                  />
+      {({ handleSubmit, values, getFieldProps }) => (
+        <form onSubmit={handleSubmit}>
+          <div className="flex flex-row justify-center items-center w-full">
+            <div className="mx-12 sm:mx-4 w-[75%]">
+              <div className="flex flex-col gap-y-4">
+                <FieldArray
+                  name="teams"
+                  render={({ push, remove }) => (
+                    <>
+                      {values.teams.map((newTeam, index) => (
+                        <div key={index}>
+                          <SelectInput
+                            {...getFieldProps(`teams[${index}].name`)}
+                            name={`teams[${index}].name`}
+                            displayKey="name"
+                            placeholder="Select a Team"
+                            values={teams}
+                          />
+                          <SelectInput
+                            {...getFieldProps(`teams[${index}].captain.name`)}
+                            name={`teams[${index}].captain.id`}
+                            renderOption={(user) => (
+                              <span>
+                                {user.gamertag} | {user.fullName}
+                              </span>
+                            )}
+                            placeholder="Select Team Captain"
+                            values={players.data || []}
+                          />
+                          <Button
+                            onClick={() =>
+                              removeTeam(values.teams, index, remove)
+                            }
+                          >
+                            Remove team
+                          </Button>
+                        </div>
+                      ))}
+                      <Button
+                        onClick={() =>
+                          addNewTeamToForm(values.teams, teams, push)
+                        }
+                      >
+                        Add a team
+                      </Button>
+                    </>
+                  )}
+                />
+                <div className="flex flex-row gap-x-4">
+                  <div className="flex-grow w-full">
+                    <DatePicker
+                      placeholder="Start Date"
+                      className="w-full"
+                      name="startAt"
+                    />
+                  </div>
+                  <div className="flex-grow w-full">
+                    <DatePicker
+                      placeholder="End Date"
+                      className="w-full"
+                      name="endAt"
+                    />
+                  </div>
                 </div>
-                <div className="flex-grow w-full">
-                  <DatePicker
-                    placeholder="End Date"
-                    className="w-full"
-                    name="endAt"
-                  />
-                </div>
+                <Button type="submit">Create</Button>
               </div>
-              <Button type="submit">Create</Button>
             </div>
           </div>
-        </div>
-      </form>
+        </form>
+      )}
     </Formik>
   );
 }
