@@ -2,11 +2,15 @@ import { FHL, FHLContext } from "@/context/FHLContext";
 import { useContext } from "react";
 
 export function useFhl(): FHL {
-  const fhl = useContext(FHLContext);
+  const context = useContext(FHLContext);
 
-  if (!fhl) {
-    throw new Error("fhl not set in the context!");
+  if (!context) {
+    throw new Error("useFhl must be used within a FHLContext");
   }
 
-  return fhl;
+  if (!context.fhl) {
+    context.refetch();
+  }
+
+  return context.fhl as FHL;
 }

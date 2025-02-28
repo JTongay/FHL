@@ -4,14 +4,16 @@ import { CalendarIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
 import { Calendar } from "../ui/calendar";
-import { FieldInputProps, useField } from "formik";
+import { useField } from "formik";
 
-interface Props extends FieldInputProps<string> {
+interface Props {
   placeholder: string;
+  className?: string;
+  name: string;
 }
 
-export const DatePicker = ({ placeholder, ...props }: Props) => {
-  const [field] = useField<Date>(props);
+export const DatePicker = ({ placeholder, className, name }: Props) => {
+  const [field] = useField<Date | undefined>(name);
 
   return (
     <Popover>
@@ -19,7 +21,7 @@ export const DatePicker = ({ placeholder, ...props }: Props) => {
         <Button
           variant={"outline"}
           className={cn(
-            "w-[280px] justify-start text-left font-normal",
+            `${className} justify-start text-left font-normal`,
             !field.value && "text-muted-foreground"
           )}
         >

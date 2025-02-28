@@ -6,10 +6,20 @@ export type FHL = {
   name: string;
 };
 
-export const FHLContext = createContext<FHL | null>(null);
+interface FHLContextProps {
+  fhl: FHL | null;
+  refetch: () => void;
+}
+
+export const FHLContext = createContext<FHLContextProps | null>(null);
 
 export const FHLContextProvider = (props: PropsWithChildren) => {
-  const { data, error } = useFhlQuery();
+  const { data, loading, error, refetch } = useFhlQuery();
+
+  if (loading) {
+    console.log("Loading FHL Data");
+    return <h1>Loading FHL Data From the Context!!</h1>;
+  }
 
   if (error) {
     console.warn("error fetching FHL data: ", error);
@@ -19,8 +29,11 @@ export const FHLContextProvider = (props: PropsWithChildren) => {
     return (
       <FHLContext.Provider
         value={{
-          id: data.fhl.league.id,
-          name: data.fhl.league.name,
+          fhl: {
+            id: data.fhl.league.id,
+            name: data.fhl.league.name,
+          },
+          refetch,
         }}
       >
         {props.children}
