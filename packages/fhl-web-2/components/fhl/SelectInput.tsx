@@ -55,16 +55,21 @@ export const SelectInput = <T extends FieldInputValue, K extends keyof T>({
   name,
   placeholder,
 }: Props<T, K>) => {
-  const [field] = useField<string>(name);
+  const [field, meta, helpers] = useField<string>(name);
+
+  // Handle value change
+  const handleValueChange = (newValue: string) => {
+    helpers.setValue(newValue);
+  };
 
   return (
-    <Select>
+    <Select value={field.value} onValueChange={handleValueChange}>
       <SelectTrigger className="w-full">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
         {values.map((item, index) => (
-          <SelectItem {...field} value={item.id} key={index}>
+          <SelectItem value={item.id} key={index}>
             <SelectDisplay
               item={item}
               displayKey={displayKey}

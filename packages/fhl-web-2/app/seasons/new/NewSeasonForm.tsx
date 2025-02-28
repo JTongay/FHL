@@ -6,7 +6,7 @@ import {
   CreateFullSeasonMutationFn,
   CreateFullSeasonMutation,
 } from "@/generated/gql/graphql";
-import { FieldArray, Form, useFormik, Formik } from "formik";
+import { FieldArray, Formik } from "formik";
 import { PropsWithChildren } from "react";
 import { DatePicker } from "@/components/fhl/DatePicker";
 import { Button } from "@/components/ui/button";
@@ -50,16 +50,14 @@ export function NewSeasonForm({
   ) => {
     // Check the length of the teams in the form compared
     // to the length of all teams
-    //
-    console.log(teamsInForm, "teams in form");
-    console.log(allTeams, "all teams");
+    // TODO: Check the teams and filter out what's
+    // already selected so they can't choose the same one twice
     if (teamsInForm.length === allTeams.length) {
       console.log("Can't add any more teams");
       return;
       // Show an alert or something or just disable the button
     }
 
-    console.log("Adding a new team, all good");
     // All good, add a new section in the formy form
     push({ id: "", name: "", captain: { id: "", name: "" } });
   };
@@ -85,19 +83,18 @@ export function NewSeasonForm({
         teams: [
           {
             id: "",
-            name: "",
             captain: {
               id: "",
-              name: "",
             },
           },
         ],
       }}
-      onSubmit={(values) => {
+      onSubmit={(values, helpers) => {
         console.log(values, "onSubmit");
+        console.log(helpers, "status");
       }}
     >
-      {({ handleSubmit, values, getFieldProps }) => (
+      {({ handleSubmit, values }) => (
         <form onSubmit={handleSubmit}>
           <div className="flex flex-row justify-center items-center w-full">
             <div className="mx-12 sm:mx-4 w-[75%]">
@@ -109,14 +106,12 @@ export function NewSeasonForm({
                       {values.teams.map((newTeam, index) => (
                         <div key={index}>
                           <SelectInput
-                            {...getFieldProps(`teams[${index}].name`)}
-                            name={`teams[${index}].name`}
+                            name={`teams[${index}].id`}
                             displayKey="name"
                             placeholder="Select a Team"
                             values={teams}
                           />
                           <SelectInput
-                            {...getFieldProps(`teams[${index}].captain.name`)}
                             name={`teams[${index}].captain.id`}
                             renderOption={(user) => (
                               <span>
