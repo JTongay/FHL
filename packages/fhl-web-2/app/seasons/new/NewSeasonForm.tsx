@@ -12,6 +12,11 @@ import { DatePicker } from "@/components/fhl/DatePicker";
 import { Button } from "@/components/ui/button";
 import { SelectInput } from "@/components/fhl/SelectInput";
 import { MutationResult } from "@apollo/client";
+import {
+  NewSeasonRequest,
+  type NewSeasonFormValues,
+  type TeamFormValue,
+} from "@/models/NewSeasonRequest";
 
 interface Props extends PropsWithChildren {
   leagueId: string;
@@ -19,21 +24,6 @@ interface Props extends PropsWithChildren {
   players: Partial<UsersList>;
   submit: CreateFullSeasonMutationFn;
   submitStatus: MutationResult<CreateFullSeasonMutation>;
-}
-
-type TeamFormValue = {
-  id: string;
-  name: string;
-  captain: {
-    id: string;
-    name: string;
-  };
-};
-
-interface FormValues {
-  startAt?: Date;
-  endAt?: Date;
-  teams: TeamFormValue[];
 }
 
 export function NewSeasonForm({
@@ -44,7 +34,7 @@ export function NewSeasonForm({
   submitStatus,
 }: Props) {
   const addNewTeamToForm = (
-    teamsInForm: FormValues["teams"],
+    teamsInForm: NewSeasonFormValues["teams"],
     allTeams: Partial<Team>[],
     push: (emptyTeam: TeamFormValue) => void
   ) => {
@@ -59,11 +49,11 @@ export function NewSeasonForm({
     }
 
     // All good, add a new section in the formy form
-    push({ id: "", name: "", captain: { id: "", name: "" } });
+    push({ id: "", captain: { id: "" } });
   };
 
   const removeTeam = (
-    teamsInForm: FormValues["teams"],
+    teamsInForm: NewSeasonFormValues["teams"],
     index: number,
     remove: (index: number) => void
   ) => {
@@ -89,9 +79,30 @@ export function NewSeasonForm({
           },
         ],
       }}
-      onSubmit={(values, helpers) => {
+      onSubmit={async (values, { setSubmitting }) => {
         console.log(values, "onSubmit");
-        console.log(helpers, "status");
+        setSubmitting(true);
+        const request = new NewSeasonRequest(values, leagueId);
+        try {
+          const result = await submit({
+            variables: {
+              input: request,
+            },
+          });
+          console.log(result, "Result??");
+          if (result.errors) {
+            console.log(result.errors, "ERRORS!!");
+            // TODO Set Errors that were returned
+          }
+
+          if (result.data) {
+            console.log(result.data, "RESULT!!");
+            // TODO Show a toast of success
+            // TODO Redirect maybe?
+          }
+        } catch (e) {
+          console.error(e, "Big Bad Error yo");
+        }
       }}
     >
       {({ handleSubmit, values }) => (

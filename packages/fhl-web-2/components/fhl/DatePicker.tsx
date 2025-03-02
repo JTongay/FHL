@@ -5,6 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
 import { Calendar } from "../ui/calendar";
 import { Field, useField } from "formik";
+import dayjs from "dayjs";
 
 interface Props {
   placeholder: string;
@@ -23,13 +24,17 @@ export const DatePicker = ({ placeholder, className, name }: Props) => {
     setValue(date);
   };
 
+  const setDate = (date: Date) => {
+    return dayjs(date, "YYYY-MM-DD").toJSON();
+  };
+
   return (
     <div className="form-field">
       {/* Hidden input to connect with Formik */}
       <input
         type="hidden"
         {...field}
-        value={field.value ? field.value.toISOString() : ""}
+        value={field.value ? setDate(field.value) : ""}
       />
 
       <Popover>
