@@ -16,6 +16,7 @@
     "require-jsdoc": 0,
     "indent": ["error", 2],
     "quotes": "off",
-    "object-curly-spacing": "off"
+    "object-curly-spacing": "off",
+    "import/no-unresolved": 0
   }
 }

@@ -18,7 +18,6 @@ export const FHLContextProvider = (props: PropsWithChildren) => {
 
   if (loading) {
     console.log("Loading FHL Data");
-    return <h1>Loading FHL Data From the Context!!</h1>;
   }
 
   if (error) {

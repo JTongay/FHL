@@ -4,7 +4,7 @@ import { CalendarIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
 import { Calendar } from "../ui/calendar";
-import { Field, useField } from "formik";
+import { useField } from "formik";
 import dayjs from "dayjs";
 
 interface Props {
@@ -22,9 +22,10 @@ export const DatePicker = ({ placeholder, className, name }: Props) => {
   // Custom handler for the Calendar's onSelect
   const handleSelect = (date: Date | undefined) => {
     setValue(date);
+    return;
   };
 
-  const setDate = (date: Date) => {
+  const convertDate = (date: Date) => {
     return dayjs(date, "YYYY-MM-DD").toJSON();
   };
 
@@ -34,7 +35,7 @@ export const DatePicker = ({ placeholder, className, name }: Props) => {
       <input
         type="hidden"
         {...field}
-        value={field.value ? setDate(field.value) : ""}
+        value={field.value ? convertDate(field.value) : ""}
       />
 
       <Popover>

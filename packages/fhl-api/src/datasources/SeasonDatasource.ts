@@ -93,19 +93,15 @@ export class SeasonDatasource {
    * @returns The season id of the created season
    */
   async createFullSeason(input: CreateFullSeasonParams): Promise<string> {
-    // Inspect the input, throw an error if there are duplicate ids on keys
-    // This should be done through the repository, or I should be injecting the repositories
-    // on the context instead. Doesn't super matter if it's just me, but maybe come back to this
-    // idea if things become a hindrance
     try {
       const season = await fhlDb.transaction().execute(async (trans) => {
-        console.log(input, "Input in the DataSource");
         const addedSeason = await trans
           .insertInto("seasons")
           .values({
             league_id: +input.leagueId,
             is_active: true,
             year: new Date(input.startDate).getFullYear(),
+            // Should I add a gauntlet date?
             start_date: new Date(input.startDate),
             end_date: new Date(input.endDate),
           })
