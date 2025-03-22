@@ -1,4 +1,4 @@
-import { FieldInputProps, useField } from "formik";
+import { useField } from "formik";
 import {
   Select,
   SelectContent,
@@ -14,8 +14,8 @@ type FieldInputValue = {
 
 type RenderOptionFn<T extends FieldInputValue> = (option: T) => ReactNode;
 
-interface Props<T extends FieldInputValue, K extends keyof T>
-  extends FieldInputProps<string> {
+interface Props<T extends FieldInputValue, K extends keyof T> {
+  name: string;
   values: T[];
   // For simple display values with no fancy styling or content
   displayKey?: K;
@@ -53,17 +53,23 @@ export const SelectInput = <T extends FieldInputValue, K extends keyof T>({
   renderOption,
   values,
   name,
+  placeholder,
 }: Props<T, K>) => {
-  const [field] = useField<string>(name);
+  const [field, meta, helpers] = useField<string>(name);
+
+  // Handle value change
+  const handleValueChange = (newValue: string) => {
+    helpers.setValue(newValue);
+  };
 
   return (
-    <Select>
+    <Select value={field.value} onValueChange={handleValueChange}>
       <SelectTrigger className="w-full">
-        <SelectValue placeholder="Select a Team" />
+        <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
-        {values.map((item) => (
-          <SelectItem {...field} value={item.id}>
+        {values.map((item, index) => (
+          <SelectItem value={item.id} key={index}>
             <SelectDisplay
               item={item}
               displayKey={displayKey}

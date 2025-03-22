@@ -1,24 +1,23 @@
 "use client";
 
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   UsersList,
   Team,
   CreateFullSeasonMutationFn,
   CreateFullSeasonMutation,
 } from "@/generated/gql/graphql";
-import { Form, Formik, FormikHelpers, FormikProps } from "formik";
+import { FieldArray, Formik, FormikHelpers } from "formik";
 import { PropsWithChildren } from "react";
 import { DatePicker } from "@/components/fhl/DatePicker";
 import { Button } from "@/components/ui/button";
 import { SelectInput } from "@/components/fhl/SelectInput";
 import { MutationResult } from "@apollo/client";
+import {
+  NewSeasonRequest,
+  type NewSeasonFormValues,
+  type TeamFormValue,
+} from "@/models/NewSeasonRequest";
+import { toast } from "sonner";
 
 interface Props extends PropsWithChildren {
   leagueId: string;
@@ -28,91 +27,170 @@ interface Props extends PropsWithChildren {
   submitStatus: MutationResult<CreateFullSeasonMutation>;
 }
 
-interface FormValues {
-  startAt?: Date;
-  endAt?: Date;
+type DefaultFormValues = {
+  startAt: undefined;
+  endAt: undefined;
+  teams: {
+    id: string;
+    captain: {
+      id: string;
+    };
+  }[];
+};
+
+const initialValues: DefaultFormValues = {
+  startAt: undefined,
+  endAt: undefined,
   teams: [
     {
-      id: string;
-      captainId: string;
-    }
-  ];
-}
-
-export function NewSeasonForm({ players, teams, leagueId, submit }: Props) {
-  const onSubmit = (
-    values: FormValues,
-    { setSubmitting }: FormikHelpers<FormValues>
-  ) => {
-    submit({
-      variables: {
-        input: {
-          teams: [],
-          leagueId: leagueId,
-          endDate: values.endAt,
-          startDate: values.startAt,
-        },
+      id: "",
+      captain: {
+        id: "",
       },
-    });
-    setSubmitting(false);
-  };
-  return (
-    <Formik
-      initialValues={{
-        startAt: undefined,
-        endAt: undefined,
-        teams: [
-          {
-            id: "",
-            captainId: "",
-          },
-        ],
-      }}
-      onSubmit={onSubmit}
-    >
-      {(props: FormikProps<FormValues>) => (
-        <Form>
-          <SelectInput
-            {...props.getFieldProps("selectTeam")}
-            name="selectTeam"
-            displayKey="name"
-            placeholder="Select a Team"
-            values={teams}
-          />
-          <SelectInput
-            {...props.getFieldProps("selectCaptain")}
-            name="selectCaptain"
-            renderOption={(user) => (
-              <span>
-                {user.gamertag} | {user.fullName}
-              </span>
-            )}
-            placeholder="Select Team Captain"
-            values={players.data || []}
-          />
-          <Select>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select Team Captain" />
-            </SelectTrigger>
-            <SelectContent>
-              {players.data?.map((user) => (
-                <SelectItem value={user.id}>
-                  {user.gamertag} | {user.fullName}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+    },
+  ],
+};
 
-          <DatePicker
-            {...props.getFieldProps("startAt")}
-            placeholder="Start Date"
-          />
-          <DatePicker
-            {...props.getFieldProps("endAt")}
-            placeholder="End Date"
-          />
-          <Button type="submit">Create</Button>
-        </Form>
+export function NewSeasonForm({
+  leagueId,
+  teams,
+  players,
+  submit,
+  submitStatus,
+}: Props) {
+  const addNewTeamToForm = (
+    teamsInForm: NewSeasonFormValues["teams"],
+    allTeams: Partial<Team>[],
+    push: (emptyTeam: TeamFormValue) => void
+  ) => {
+    // Check the length of the teams in the form compared
+    // to the length of all teams
+    // TODO: Check the teams and filter out what's
+    // already selected so they can't choose the same one twice
+    if (teamsInForm.length === allTeams.length) {
+      console.log("Can't add any more teams");
+      return;
+      // Show an alert or something or just disable the button
+    }
+
+    // All good, add a new section in the formy form
+    push({ id: "", captain: { id: "" } });
+  };
+
+  const removeTeam = (
+    teamsInForm: NewSeasonFormValues["teams"],
+    index: number,
+    remove: (index: number) => void
+  ) => {
+    if (teamsInForm.length <= 1) {
+      // Should not get here but we should handle it anyway
+      return;
+    }
+
+    remove(index);
+  };
+
+  const handleSubmit = async (
+    values: NewSeasonFormValues,
+    { setSubmitting }: FormikHelpers<DefaultFormValues>
+  ) => {
+    setSubmitting(true);
+    const request = new NewSeasonRequest(values, leagueId);
+    try {
+      const result = await submit({
+        variables: {
+          input: request,
+        },
+      });
+      console.log(result, "Result??");
+      if (result.errors) {
+        console.log(result.errors, "ERRORS!!");
+        // TODO Set Errors that were returned
+        toast("poop");
+      }
+
+      if (result.data) {
+        console.log(result.data, "RESULT!!");
+        // TODO Show a toast of success
+        // TODO Redirect maybe?
+      }
+    } catch (e) {
+      // Insanely bad error
+      console.error(e, "Big Bad Error yo");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+      {({ handleSubmit, values }) => (
+        <form onSubmit={handleSubmit}>
+          <div className="flex flex-row justify-center items-center w-full">
+            <div className="mx-12 sm:mx-4 w-[75%]">
+              <div className="flex flex-col gap-y-4">
+                <FieldArray
+                  name="teams"
+                  render={({ push, remove }) => (
+                    <>
+                      {values.teams.map((newTeam, index) => (
+                        <div key={index}>
+                          <SelectInput
+                            name={`teams[${index}].id`}
+                            displayKey="name"
+                            placeholder="Select a Team"
+                            values={teams}
+                          />
+                          <SelectInput
+                            name={`teams[${index}].captain.id`}
+                            renderOption={(user) => (
+                              <span>
+                                {user.gamertag} | {user.fullName}
+                              </span>
+                            )}
+                            placeholder="Select Team Captain"
+                            values={players.data || []}
+                          />
+                          <Button
+                            onClick={() =>
+                              removeTeam(values.teams, index, remove)
+                            }
+                          >
+                            Remove team
+                          </Button>
+                        </div>
+                      ))}
+                      <Button
+                        onClick={() =>
+                          addNewTeamToForm(values.teams, teams, push)
+                        }
+                      >
+                        Add a team
+                      </Button>
+                    </>
+                  )}
+                />
+                <div className="flex flex-row gap-x-4">
+                  <div className="flex-grow w-full">
+                    <DatePicker
+                      placeholder="Start Date"
+                      className="w-full"
+                      name="startAt"
+                    />
+                  </div>
+                  <div className="flex-grow w-full">
+                    <DatePicker
+                      placeholder="End Date"
+                      className="w-full"
+                      name="endAt"
+                    />
+                  </div>
+                </div>
+                <Button type="submit">Create</Button>
+              </div>
+            </div>
+          </div>
+        </form>
       )}
     </Formik>
   );

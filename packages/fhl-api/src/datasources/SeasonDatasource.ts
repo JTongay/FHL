@@ -101,8 +101,9 @@ export class SeasonDatasource {
             league_id: +input.leagueId,
             is_active: true,
             year: new Date(input.startDate).getFullYear(),
-            start_date: input.startDate,
-            end_date: input.endDate,
+            // Should I add a gauntlet date?
+            start_date: new Date(input.startDate),
+            end_date: new Date(input.endDate),
           })
           .returning("id")
           .executeTakeFirstOrThrow();

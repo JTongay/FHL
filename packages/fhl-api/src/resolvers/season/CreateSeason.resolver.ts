@@ -4,7 +4,9 @@ import { Input } from "@/util";
 import { CreateSeasonParams, Season, SeasonResponse } from "@/domain/Season";
 import { ApiError } from "@/domain/errors/FHLApiError";
 import { fhlDb } from "@fhl/core/src/db";
-
+/**
+ * @deprecated Don't do this anymore. WTF was I thinking?
+ */
 export class CreateSeasonResolver extends BaseResolver {
   protected async resolver(
     parent: never,

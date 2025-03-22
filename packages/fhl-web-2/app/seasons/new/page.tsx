@@ -31,7 +31,17 @@ export default function NewSeasonsPage() {
     const playersList = data.users;
     return (
       <>
-        <h1>New Season Form</h1>
+        <div className="flex justify-center flex-col items-center">
+          <h1>New Season Form</h1>
+          <p>
+            This creates a new {fhl.name.toUpperCase()} season for the future.
+          </p>
+          <p>
+            You can edit these values at a later time, they are not set in
+            stone!
+          </p>
+        </div>
+
         <NewSeasonForm
           submit={createFullSeasonMutation}
           submitStatus={status}

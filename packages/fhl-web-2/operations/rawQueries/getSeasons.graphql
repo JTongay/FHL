@@ -1,4 +1,5 @@
 query GetSeasons {
+  # TODO: Pagination
   seasons(limit: 10, offset: 1) {
     __typename
     ... on SeasonsList {
