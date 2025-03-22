@@ -5,6 +5,7 @@ import { Providers } from "./providers";
 import type { ReactNode } from "react";
 import { NavBar } from "../components/fhl/Nav";
 import { Page } from "@/components/fhl/Page";
+import { Toaster } from "@/components/ui/sonner";
 
 // eslint-disable-next-line new-cap
 const inter = Inter({ subsets: ["latin"] });
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <Page>{children}</Page>
           </NavBar>
         </Providers>
+        <Toaster />
       </body>
     </html>
   );

@@ -31,8 +31,8 @@ export default function NewSeasonsPage() {
     const playersList = data.users;
     return (
       <>
-        <h1>New Season Form</h1>
-        <div className="flex justify-center flex-col">
+        <div className="flex justify-center flex-col items-center">
+          <h1>New Season Form</h1>
           <p>
             This creates a new {fhl.name.toUpperCase()} season for the future.
           </p>

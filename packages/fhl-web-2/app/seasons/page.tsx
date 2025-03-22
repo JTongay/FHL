@@ -1,6 +1,9 @@
+"use client";
+
 import { useGetSeasonsSuspenseQuery } from "@/generated/gql/graphql";
 import Link from "next/link";
 import { Suspense } from "react";
+import { SeasonsContent } from "./SeasonsContent";
 
 export default function Seasons() {
   // TODO - Add Pagination to the query
@@ -11,22 +14,12 @@ export default function Seasons() {
   }
   return (
     <>
+      <h1>Here be the Seasons screen</h1>
       <Suspense fallback={<p>Loading Seasons...</p>}>
-        <h1>Here be the Seasons screen</h1>
-        <div className="flex flex-col justify-center items-center">
-          {data.seasons.data.map((season) => (
-            <>
-              <h1>{season.id}</h1>
-              {season.teams.map((team) => (
-                <>
-                  <p>{team.name}</p>
-                </>
-              ))}
-            </>
-          ))}
-        </div>
-        <Link href="/seasons/new">Create A Season</Link>
+        <SeasonsContent />
       </Suspense>
+
+      <Link href="/seasons/new">Create A Season</Link>
     </>
   );
 }

@@ -6,7 +6,7 @@ import {
   CreateFullSeasonMutationFn,
   CreateFullSeasonMutation,
 } from "@/generated/gql/graphql";
-import { FieldArray, Formik } from "formik";
+import { FieldArray, Formik, FormikHelpers } from "formik";
 import { PropsWithChildren } from "react";
 import { DatePicker } from "@/components/fhl/DatePicker";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import {
   type NewSeasonFormValues,
   type TeamFormValue,
 } from "@/models/NewSeasonRequest";
+import { toast } from "sonner";
 
 interface Props extends PropsWithChildren {
   leagueId: string;
@@ -25,6 +26,30 @@ interface Props extends PropsWithChildren {
   submit: CreateFullSeasonMutationFn;
   submitStatus: MutationResult<CreateFullSeasonMutation>;
 }
+
+type DefaultFormValues = {
+  startAt: undefined;
+  endAt: undefined;
+  teams: {
+    id: string;
+    captain: {
+      id: string;
+    };
+  }[];
+};
+
+const initialValues: DefaultFormValues = {
+  startAt: undefined,
+  endAt: undefined,
+  teams: [
+    {
+      id: "",
+      captain: {
+        id: "",
+      },
+    },
+  ],
+};
 
 export function NewSeasonForm({
   leagueId,
@@ -65,46 +90,40 @@ export function NewSeasonForm({
     remove(index);
   };
 
-  return (
-    <Formik
-      initialValues={{
-        startAt: undefined,
-        endAt: undefined,
-        teams: [
-          {
-            id: "",
-            captain: {
-              id: "",
-            },
-          },
-        ],
-      }}
-      onSubmit={async (values, { setSubmitting }) => {
-        console.log(values, "onSubmit");
-        setSubmitting(true);
-        const request = new NewSeasonRequest(values, leagueId);
-        try {
-          const result = await submit({
-            variables: {
-              input: request,
-            },
-          });
-          console.log(result, "Result??");
-          if (result.errors) {
-            console.log(result.errors, "ERRORS!!");
-            // TODO Set Errors that were returned
-          }
+  const handleSubmit = async (
+    values: NewSeasonFormValues,
+    { setSubmitting }: FormikHelpers<DefaultFormValues>
+  ) => {
+    setSubmitting(true);
+    const request = new NewSeasonRequest(values, leagueId);
+    try {
+      const result = await submit({
+        variables: {
+          input: request,
+        },
+      });
+      console.log(result, "Result??");
+      if (result.errors) {
+        console.log(result.errors, "ERRORS!!");
+        // TODO Set Errors that were returned
+        toast("poop");
+      }
 
-          if (result.data) {
-            console.log(result.data, "RESULT!!");
-            // TODO Show a toast of success
-            // TODO Redirect maybe?
-          }
-        } catch (e) {
-          console.error(e, "Big Bad Error yo");
-        }
-      }}
-    >
+      if (result.data) {
+        console.log(result.data, "RESULT!!");
+        // TODO Show a toast of success
+        // TODO Redirect maybe?
+      }
+    } catch (e) {
+      // Insanely bad error
+      console.error(e, "Big Bad Error yo");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Formik initialValues={initialValues} onSubmit={handleSubmit}>
       {({ handleSubmit, values }) => (
         <form onSubmit={handleSubmit}>
           <div className="flex flex-row justify-center items-center w-full">
