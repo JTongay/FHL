@@ -15,7 +15,7 @@
     "@typescript-eslint/parser": "^6.8.0",
     "eslint": "8.44.0",
     "prettier": "^3.3.3",
-    "sst": "2.39.2",
+    "sst": "catalog:",
     "tsx": "^3.12.9",
     "vitest": "^0.34.4"
   },
