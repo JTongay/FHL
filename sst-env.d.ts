@@ -5,44 +5,6 @@
 
 declare module "sst" {
   export interface Resource {
-    "FHLApi": {
-      "type": "sst.aws.ApiGatewayV2"
-      "url": string
-    }
-    "FHLDB-VPC": {
-      "type": "sst.aws.Vpc"
-    }
-    "fhlDb": {
-      "database": string
-      "host": string
-      "password": string
-      "port": number
-      "type": "sst.aws.Postgres"
-      "username": string
-    }
-    "fhlDb_test": {
-      "database": string
-      "host": string
-      "password": string
-      "port": number
-      "type": "sst.aws.Postgres"
-      "username": string
-    }
-    "fhldb": {
-      "clusterArn": string
-      "database": string
-      "host": string
-      "password": string
-      "port": number
-      "reader": string
-      "secretArn": string
-      "type": "sst.aws.Aurora"
-      "username": string
-    }
-    "page": {
-      "type": "sst.aws.StaticSite"
-      "url": string
-    }
   }
 }
 /// <reference path="sst-env.d.ts" />
