@@ -1,0 +1,30 @@
+type Mutation {
+  createTest(testInput: TestInput!): String! @deprecated
+  createUser(input: CreateUserInput!): UserResponse!
+  updateUser(input: UpdateUserInput!): UserResponse!
+  createLeague(input: CreateLeagueInput!): LeagueResponse!
+  createSeason(input: CreateSeasonInput!): SeasonResponse!
+  updateSeason(input: UpdateSeasonInput!): SeasonResponse!
+  deleteSeason(input: DeleteSeasonInput!): Boolean!
+  createStoryline(input: CreateStorylineInput!): StorylineResponse!
+  "Updates the storyline"
+  updateStoryline(input: UpdateStorylineInput!): StorylineResponse!
+  deleteStoryline(input: DeleteStorylineInput!): Boolean!
+  createAward(input: CreateAwardInput!): AwardResponse!
+  createTeam(input: CreateTeamInput!): CreateTeamResponse!
+  addTeamToSeason(input: AddTeamToSeasonInput!): ID!
+  updateTeam(input: UpdateTeamInput!): UpdateTeamResponse!
+  createEvent(input: CreateEventInput!): EventResponse!
+  updateEvent(input: UpdateEventInput!): EventResponse!
+  "Drafts a player to a team. Typically occurs before the Season starts"
+  draftPlayerToTeam(input: DraftPlayerInput!): ID!
+  "Removes a player from a team during a season"
+  removePlayerFromTeam(input: DraftPlayerInput!): Boolean!
+  "Creates a season with the selected teams along with the selected captains"
+  createFullSeason(input: CreateFullSeasonInput!): ID!
+}
+
+input TestInput {
+  name: String!
+  age: Int!
+}

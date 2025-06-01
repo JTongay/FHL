@@ -1,0 +1,2 @@
+ALTER TABLE "award_season" ADD CONSTRAINT "award_season_presenter_id_users_id_fk" FOREIGN KEY ("presenter_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "award_season" ADD CONSTRAINT "award_season_winner_id_users_id_fk" FOREIGN KEY ("winner_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;

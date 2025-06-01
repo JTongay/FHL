@@ -11,7 +11,9 @@
     "console": "sst console",
     "deploy:prod": "sst deploy --stage prod",
     "deploy:test": "sst deploy --stage test",
-    "dev": "sst dev --stage local",
+    "diagnostic": "sst diagnostic",
+    "db": "pnpm --filter @fhl/core-next run db",
+    "dev": "sst dev",
     "gen": "hygen",
     "local": "sst dev --stage local",
     "remove": "sst remove",
@@ -20,13 +22,15 @@
     "typecheck": "tsc --noEmit && tsc-alias -p tsconfig.json"
   },
   "dependencies": {
-    "sst": "3.11.11"
+    "@graphql-tools/graphql-file-loader": "^8.0.0",
+    "@graphql-tools/load": "^8.0.0",
+    "sst": "catalog:"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.4.8",
     "@changesets/cli": "^2.26.2",
     "@stylistic/eslint-plugin-ts": "^1.7.0",
-    "@tsconfig/node18": "^18.2.1",
+    "@tsconfig/node20": "^20.1.5",
     "@types/aws-lambda": "8.10.148",
     "@types/react": "18.2.14",
     "aws-cdk-lib": "2.91.0",

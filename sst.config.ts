@@ -12,7 +12,7 @@ export default $config({
 
   async run() {
     await import("./infra/FHLDb.js");
-    await import("./infra/FHLApi.js");
+    // await import("./infra/FHLApi.js");
     await import("./infra/FHLWeb3.js");
 
     return {

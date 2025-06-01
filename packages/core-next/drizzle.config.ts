@@ -7,10 +7,10 @@ export default defineConfig({
   schema: ["./src/**/*.sql.ts"],
   out: "./migrations",
   dbCredentials: {
-    host: Resource.MyPostgres.host,
-    port: Resource.MyPostgres.port,
-    user: Resource.MyPostgres.username,
-    password: Resource.MyPostgres.password,
-    database: Resource.MyPostgres.database,
+    host: Resource.fhlDb_test.host,
+    port: Resource.fhlDb_test.port,
+    user: Resource.fhlDb_test.username,
+    password: Resource.fhlDb_test.password,
+    database: Resource.fhlDb_test.database,
   },
 });

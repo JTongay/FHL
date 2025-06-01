@@ -31,8 +31,9 @@ export const FHLDB = new sst.aws.Postgres("fhlDb_test", {
   database: "fhlDb_test",
 });
 
-new sst.aws.Aurora("fhldb", {
-  vpc,
-  engine: "postgres",
-  database: "fhlDb_test", // TODO - Create Prod DB when you get there
+new sst.x.DevCommand("Studio", {
+  link: [FHLDB],
+  dev: {
+    command: "pnpx run db",
+  },
 });
