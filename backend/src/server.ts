@@ -4,11 +4,14 @@ import { loadSchemaSync } from "@graphql-tools/load";
 import express from "express";
 import { expressMiddleware } from "@as-integrations/express5";
 import helmet from "helmet";
+import cors from "cors";
 import http from "http";
 import { QueryResolvers } from "./graphql/resolvers/QueryResolvers";
 import { MutationResolvers } from "./graphql/resolvers/MutationResolvers";
 import { FHLContext } from "./domain/FHLContext";
 import { UserDatasource } from "./datasources/UserDatasource";
+import { UnionResolvers } from "./graphql/resolvers/UnionResolvers";
+import { TeamDatasource } from "./datasources/TeamDatasource";
 
 function loadFHLSchema() {
   return loadSchemaSync("src/graphql/schema/**/*.graphql", {
@@ -17,7 +20,6 @@ function loadFHLSchema() {
 }
 
 export async function startServer() {
-  console.log("hi");
   const app = express();
 
   const httpServer = http.createServer(app);
@@ -27,6 +29,7 @@ export async function startServer() {
     resolvers: {
       ...QueryResolvers,
       ...MutationResolvers,
+      ...UnionResolvers,
     },
     typeDefs: loadFHLSchema(),
     includeStacktraceInErrorResponses: true,
@@ -37,6 +40,10 @@ export async function startServer() {
 
   app.use(
     "/graphql",
+    cors({
+      origin: "*", // Allow all origins for development; adjust as needed for production
+      methods: "GET,POST,OPTIONS",
+    }),
     express.json(),
     expressMiddleware(server, {
       context: async (request): Promise<FHLContext> => {
@@ -44,6 +51,7 @@ export async function startServer() {
           authToken: request.req.headers["authorization"] || "",
           datasources: {
             userDatasource: new UserDatasource(),
+            teamDatasource: new TeamDatasource(),
           },
         };
       },

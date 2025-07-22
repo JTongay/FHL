@@ -9,6 +9,7 @@ import {
 import { AwardSeasonTable, LeaguesTable, SeasonsTable } from "./leagues";
 import { timestamps } from "../helpers/schema.helpers";
 import { relations } from "drizzle-orm";
+import { time } from "console";
 
 export const UsersTable = pgTable("users", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -18,6 +19,9 @@ export const UsersTable = pgTable("users", {
   email: varchar().unique(),
   wins: integer().notNull().default(0),
   losses: integer().notNull().default(0),
+  leagueId: integer("league_id")
+    .notNull()
+    .references(() => LeaguesTable.id, { onDelete: "cascade" }),
   idpId: varchar("idp_id"),
   avatarUrl: varchar("avatar_url"),
   lastSignInAt: timestamp("last_sign_in_at"),
@@ -67,14 +71,46 @@ export const TeamSeasonTable = pgTable(
     seasonId: integer("season_id")
       .notNull()
       .references(() => SeasonsTable.id),
+    captainId: integer("captain_id").references(() => UsersTable.id),
+    wins: integer().notNull().default(0),
+    losses: integer().notNull().default(0),
   },
   (t) => [primaryKey({ columns: [t.teamId, t.seasonId] })]
 );
 
+export const UserTeamSeasonTable = pgTable(
+  "user_team_season",
+  {
+    teamId: integer("team_id")
+      .notNull()
+      .references(() => TeamsTable.id, { onDelete: "cascade" }),
+    playerId: integer("player_id")
+      .notNull()
+      .references(() => UsersTable.id, { onDelete: "cascade" }),
+    seasonId: integer("season_id")
+      .notNull()
+      .references(() => SeasonsTable.id, { onDelete: "cascade" }),
+    ...timestamps,
+  },
+  (t) => [primaryKey({ columns: [t.teamId, t.playerId, t.seasonId] })]
+);
+
 // ============= Relations ======================
-// export const UsersRelations = relations(UsersTable, ({ one, many }) => ({
-//   awards: one(AwardSeasonTable, {
-//     fields: [AwardSeasonTable.winnerId, AwardSeasonTable.presenterId],
-//     references: [UsersTable.id],
-//   }),
-// }));
+export const UsersRelations = relations(UsersTable, ({ one, many }) => ({
+  awardWinner: one(AwardSeasonTable, {
+    fields: [UsersTable.id],
+    references: [AwardSeasonTable.winnerId],
+  }),
+  awardPresenter: one(AwardSeasonTable, {
+    fields: [UsersTable.id],
+    references: [AwardSeasonTable.presenterId],
+  }),
+  teamPlayer: one(TeamSeasonTable, {
+    fields: [UsersTable.id],
+    references: [TeamSeasonTable.captainId],
+  }),
+  teamCaptain: one(TeamSeasonTable, {
+    fields: [UsersTable.id],
+    references: [TeamSeasonTable.captainId],
+  }),
+}));

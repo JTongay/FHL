@@ -1,11 +1,12 @@
+import { TeamDatasource } from "@/datasources/TeamDatasource";
 import { UserDatasource } from "@/datasources/UserDatasource";
 import { Nullable } from "@/util";
 
 const UNKNOWN_HEADER = "unknown";
 
-export interface FHLContext {
-  authToken: string | null;
-}
+// export interface FHLContext {
+//   authToken: string | null;
+// }
 
 export enum Platform {
   ANDROID = "Android",
@@ -17,6 +18,7 @@ export interface FHLContext {
   authToken: Nullable<string>;
   datasources: {
     userDatasource: UserDatasource;
+    teamDatasource: TeamDatasource;
   };
 }
 

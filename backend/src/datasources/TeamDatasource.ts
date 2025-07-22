@@ -1,3 +1,6 @@
+import { db } from "@/db";
+import { TeamsTable } from "@/db/schema/users";
+import { SelectTeam } from "@/db/types";
 import {
   AddPlayerToTeamParams,
   CreateTeamParams,
@@ -12,10 +15,8 @@ import {
 } from "@/domain/Team";
 import { ApiError } from "@/domain/errors/FHLApiError";
 import { TeamRepository } from "@/repositories/Team.repository";
-import { fhlDb } from "@fhl/core/src/db";
-import { Teams } from "@fhl/core/src/sql.generated";
 import DataLoader from "dataloader";
-import { Selectable } from "kysely";
+import { inArray } from "drizzle-orm";
 
 export class TeamDatasource {
   private repo: TeamRepository;
@@ -25,20 +26,17 @@ export class TeamDatasource {
   }
 
   private batchTeams = new DataLoader(async (ids: number[]) => {
-    const teamsList = await fhlDb
-      .selectFrom("teams")
-      .where("id", "in", ids)
-      .selectAll()
+    const teamsList = await db
+      .select()
+      .from(TeamsTable)
+      .where(inArray(TeamsTable.id, ids))
       .execute();
     // Dataloader expects you to return a list with the results ordered just like the list in the arguments were
     // Since the database might return the results in a different order the following code sorts the results accordingly
-    const teamIdsToUserMap = teamsList.reduce(
-      (mapping, team) => {
-        mapping[team.id] = team;
-        return mapping;
-      },
-      {} as { [key: string]: Selectable<Teams> },
-    );
+    const teamIdsToUserMap = teamsList.reduce((mapping, team) => {
+      mapping[team.id] = team;
+      return mapping;
+    }, {} as { [key: string]: SelectTeam });
     return ids.map((id) => teamIdsToUserMap[id]);
   });
 
@@ -81,7 +79,7 @@ export class TeamDatasource {
   }
 
   public async createTeam(
-    params: CreateTeamParams,
+    params: CreateTeamParams
   ): Promise<CreateTeamResponse> {
     try {
       return await this.repo.createTeam(params);
@@ -91,7 +89,7 @@ export class TeamDatasource {
   }
 
   public async updateTeam(
-    params: UpdateTeamParams,
+    params: UpdateTeamParams
   ): Promise<UpdateTeamResponse> {
     try {
       return await this.repo.updateTeam(params);
@@ -101,7 +99,7 @@ export class TeamDatasource {
   }
 
   public async draftPlayerToTeam(
-    params: AddPlayerToTeamParams,
+    params: AddPlayerToTeamParams
   ): Promise<string | ApiError> {
     try {
       return await this.repo.addPlayerToTeam(params);
@@ -111,7 +109,7 @@ export class TeamDatasource {
   }
 
   public async removePlayerFromTeam(
-    params: RemovePlayerFromTeamParams,
+    params: RemovePlayerFromTeamParams
   ): Promise<boolean | ApiError> {
     try {
       return await this.repo.removePlayerFromTeam(params);

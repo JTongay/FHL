@@ -1,7 +1,7 @@
 import { FHLContext } from "@/domain/FHLContext";
 import { BaseResolver } from "./base/BaseResolver";
 import { db } from "@/db";
-import { TestTable } from "@/db/schema";
+import { TestTable } from "@/db/schema/testSchema";
 
 interface Args {
   name: string;

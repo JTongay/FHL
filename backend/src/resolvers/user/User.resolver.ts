@@ -14,6 +14,6 @@ export class UserResolver extends BaseResolver {
     //     +parent.captainId
     //   );
     // }
-    // return await context.datasources.userDatasource.getUser(+args.id);
+    return await context.datasources.userDatasource.getUser(+args.id);
   }
 }

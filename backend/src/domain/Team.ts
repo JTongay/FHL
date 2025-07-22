@@ -6,8 +6,8 @@ export interface BaseTeamTable {
   name: string;
   wins: number;
   losses: number;
-  created_at: Date;
-  updated_at: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export class Team {
@@ -23,8 +23,8 @@ export class Team {
     this.name = table.name;
     this.wins = table.wins;
     this.losses = table.losses;
-    this.createdAt = table.created_at;
-    this.updatedAt = table.updated_at;
+    this.createdAt = table.createdAt;
+    this.updatedAt = table.updatedAt;
   }
 }
 
@@ -34,11 +34,11 @@ export class SeasonTeam extends Team {
 
   constructor(table: TeamTable) {
     super({
-      id: table.id,
+      id: table.teamId,
       name: table.name,
       wins: table.wins,
       losses: table.losses,
-      created_at: table.created_at,
+      createdAt: table.createdAt,
       updated_at: table.updated_at,
     });
     this.captainId = table.captain_id.toString();
@@ -59,8 +59,8 @@ export class LeagueTeam extends Team {
       created_at: table.created_at,
       updated_at: table.updated_at,
     });
-    this.captainId = table.captain_id.toString();
-    this.leagueId = table.league_id.toString();
+    this.captainId = table.captainId.toString();
+    this.leagueId = table.leagueId.toString();
   }
 }
 

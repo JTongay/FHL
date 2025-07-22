@@ -36,6 +36,27 @@
       "when": 1748801283833,
       "tag": "0004_brainy_mach_iv",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1749001809176,
+      "tag": "0005_lame_quasimodo",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1749004580141,
+      "tag": "0006_nebulous_smiling_tiger",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1749435920183,
+      "tag": "0007_damp_talisman",
+      "breakpoints": true
     }
   ]
 }

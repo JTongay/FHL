@@ -11,15 +11,15 @@ import { Switch as ShadcnSwitch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 
 export function SubscribeButton({ label }: { label: string }) {
-  const form = useFormContext()
+  const { Subscribe } = useFormContext()
   return (
-    <form.Subscribe selector={(state) => state.isSubmitting}>
+    <Subscribe selector={(state) => state.isSubmitting}>
       {(isSubmitting) => (
         <Button type="submit" disabled={isSubmitting}>
           {label}
         </Button>
       )}
-    </form.Subscribe>
+    </Subscribe>
   )
 }
 
