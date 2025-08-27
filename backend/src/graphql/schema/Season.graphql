@@ -40,14 +40,6 @@ type StorylinesList implements PaginatedResponse {
   total: Int!
 }
 
-input CreateSeasonInput {
-  year: Int!
-  setActive: Boolean!
-  leagueId: ID!
-  startDate: Date!
-  endDate: Date!
-}
-
 input UpdateSeasonInput {
   id: ID!
   year: Int!

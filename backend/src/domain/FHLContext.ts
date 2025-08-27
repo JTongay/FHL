@@ -1,3 +1,6 @@
+import { AwardDatasource } from "@/datasources/AwardDatasource";
+import { LeagueDatasource } from "@/datasources/LeagueDatasource";
+import { SeasonDatasource } from "@/datasources/SeasonDatasource";
 import { TeamDatasource } from "@/datasources/TeamDatasource";
 import { UserDatasource } from "@/datasources/UserDatasource";
 import { Nullable } from "@/util";
@@ -19,6 +22,9 @@ export interface FHLContext {
   datasources: {
     userDatasource: UserDatasource;
     teamDatasource: TeamDatasource;
+    seasonDatasource: SeasonDatasource;
+    leagueDatasource: LeagueDatasource;
+    awardDatasource: AwardDatasource;
   };
 }
 

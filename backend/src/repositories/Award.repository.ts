@@ -1,179 +1,176 @@
-// import {Award, CreateAwardParams} from "@/domain/Award";
-// import {AwardMapper} from "@/domain/mappers/AwardMap";
-// import {fhlDb} from "@fhl/core/src/db";
-// import {Database} from "@fhl/core/src/sql.generated";
-// import {Transaction} from "kysely";
-// import {jsonArrayFrom} from "kysely/helpers/postgres";
-
-import { db } from "@/db";
+import { db, DBTransaction, type DBSchema } from "@/db";
 import {
-  AwardSeasonRelations,
-  AwardSeasonTable,
+  AwardSeasonPresenterTable,
+  AwardSeasonWinnerTable,
   AwardsTable,
 } from "@/db/schema/leagues";
-import { eq, sql } from "drizzle-orm";
-
-// export interface AwardTable {
-//     id: number;
-//     description: string | null;
-//     name: string;
-//     created_at: Date;
-//     updated_at: Date;
-//     season_id: number | null;
-//     presenters: {
-//         presenter_id: number | null;
-//     }[];
-//     winners: {
-//         winner_id: number | null;
-//     }[];
-// }
+import { Award, CreateAwardParams } from "@/domain/Award";
+import { AwardMapper } from "@/domain/mappers/AwardMap";
+import { and, eq, sql } from "drizzle-orm";
 
 export class AwardRepository {
   public async getAwardsForUser(id: number): Promise<Award[]> {
-    // const result = await this.getAwardWinnersAndPresentersBase()
-    //   .where("award_season_winner.winning_user_id", "=", id)
-    //   .execute();
-    // return result.map((award) => AwardMapper.toDomain(award));
+    const result = await this.getAwardWinnersAndPresentersBase()
+      .where(eq(AwardSeasonWinnerTable.winnerId, id))
+      .execute();
+    return result.map((award) => AwardMapper.toDomain(award[0]));
   }
-  //   public async getAwardsForSeason(id: number): Promise<Award[]> {
-  //     const result = await this.getAwardWinnersAndPresentersBase()
-  //         .where("award_season_winner.season_id", "=", id)
-  //         .execute();
-  //     return result.map((award) => AwardMapper.toDomain(award));
-  //   }
-  //   public async getAwardForSeason(
-  //       {seasonId, awardId}: { seasonId: number, awardId: number }
-  //   ): Promise<Award> {
-  //     const result = await this.getAwardWinnersAndPresentersBase()
-  //         .where("award_season_winner.season_id", "=", seasonId)
-  //         .where("awards.id", "=", awardId)
-  //         .executeTakeFirstOrThrow();
-  //     return AwardMapper.toDomain(result);
-  //   }
-  //   public async createAward(params: CreateAwardParams): Promise<Award> {
-  //     const {winningUserIds, presentingUserIds} = params;
-  //     return await fhlDb.transaction().execute(async (db) => {
-  //       const award = await db
-  //           .insertInto("awards")
-  //           .values({
-  //             name: params.name,
-  //             description: params.description,
-  //           })
-  //           .returningAll()
-  //           .executeTakeFirstOrThrow();
-  //       const winningUsers = await this.createAwardWinners(db, +params.seasonId, award.id, winningUserIds);
-  //       const presentingUsers = await this.createAwardPresenters(db, +params.seasonId, award.id, presentingUserIds);
-  //       // return AwardMapper.toDomain({
-  //       //     id: award.id,
-  //       //     name: award.name,
-  //       //     description: award.name,
-  //       //     created_at: award.created_at,
-  //       //     updated_at: award.updated_at,
-  //       //     season_id: +params.seasonId,
-  //       //     winners: winningUserIds
-  //       // })
-  //       return {
-  //         id: award.id.toString(),
-  //         name: award.name,
-  //         description: award.description,
-  //         createdAt: award.created_at,
-  //         updatedAt: award.updated_at,
-  //         seasonId: params.seasonId,
-  //         winningUserIds: winningUsers,
-  //         presentingUserIds: presentingUsers,
-  //       };
-  //     });
-  //   }
+
+  public async getAwardsForSeason(id: number): Promise<Award[]> {
+    const result = await this.getAwardWinnersAndPresentersBase()
+      .where(eq(AwardSeasonWinnerTable.seasonId, id))
+      .execute();
+    return result.map((award) => AwardMapper.toDomain(award[0]));
+  }
+
+  public async getAwardForSeason({
+    seasonId,
+    awardId,
+  }: {
+    seasonId: number;
+    awardId: number;
+  }): Promise<Award> {
+    const result = await this.getAwardWinnersAndPresentersBase().where(
+      and(
+        eq(AwardSeasonWinnerTable.seasonId, seasonId),
+        eq(AwardsTable.id, awardId)
+      )
+    ).execute;
+    return AwardMapper.toDomain(result[0]);
+  }
+
+  public async createAward(params: CreateAwardParams): Promise<Award> {
+    const { winningUserIds, presentingUserIds, name, description } = params;
+
+    return await db.transaction(async (trx) => {
+      const award = await trx
+        .insert(AwardsTable)
+        .values({
+          name,
+          description,
+        })
+        .returning()
+        .execute();
+
+      const winningUsers = await this.createAwardWinners(
+        trx,
+        +params.seasonId,
+        award[0].id,
+        winningUserIds
+      );
+      const presentingUSers = await this.createAwardPresenters(
+        trx,
+        +params.seasonId,
+        award[0].id,
+        presentingUserIds
+      );
+
+      return AwardMapper.toDomain({
+        id: award[0].id,
+        name: award[0].name,
+        description: award[0].description,
+        createdAt: award[0].createdAt,
+        updatedAt: award[0].updatedAt,
+        deletedAt: award[0].deletedAt,
+        seasonId: params.seasonId.toString(),
+        winners: winningUsers,
+        presenters: presentingUSers,
+      });
+    });
+  }
+
+  private async test() {
+    return await db.query.TeamSeasonTable.findMany({
+      with: {
+        players: {
+          columns: {
+            playerId: true,
+          },
+        },
+      },
+    });
+  }
 
   private getAwardWinnersAndPresentersBase() {
-    // return fhlDb
-    //   .selectFrom("awards")
-    //   .leftJoin(
-    //     "award_season_winner",
-    //     "award_season_winner.award_id",
-    //     "awards.id"
-    //   )
-    //   .select((eb) => [
-    //     "awards.id",
-    //     "awards.name",
-    //     "awards.description",
-    //     "awards.created_at",
-    //     "awards.updated_at",
-    //     "award_season_winner.season_id",
-    //     jsonArrayFrom(
-    //       eb
-    //         .selectFrom("award_season_presenter")
-    //         .whereRef("award_season_presenter.award_id", "=", "awards.id")
-    //         .select("award_season_presenter.presenter_id as presenter_id")
-    //     ).as("presenters"),
-    //     jsonArrayFrom(
-    //       eb
-    //         .selectFrom("award_season_winner")
-    //         .whereRef("award_season_winner.award_id", "=", "awards.id")
-    //         .select("award_season_winner.winning_user_id as winner_id")
-    //     ).as("winners"),
-    //   ]);
-    // return db
-    //   .select({
-    //     id: AwardsTable.id,
-    //     name: AwardsTable.name,
-    //     description: AwardsTable.description,
-    //     createdAt: AwardsTable.createdAt,
-    //     updatedAt: AwardsTable.updatedAt,
-    //     seasonId: AwardSeasonWinnerTable.seasonId,
-    //     presenters: sql<number[]>`(
-    //         SELECT COALESCE(json_agg())
-    //     )`
-    //   })
-    //   .from(AwardsTable)
-    //   .leftJoin(AwardSeasonWinnerTable, eq(AwardSeasonTable.awardId, AwardsTable.id));
+    return db
+      .select({
+        id: AwardsTable.id,
+        name: AwardsTable.name,
+        description: AwardsTable.description,
+        createdAt: AwardsTable.createdAt,
+        updatedAt: AwardsTable.updatedAt,
+        seasonId: AwardSeasonWinnerTable.seasonId,
+        presenters: sql<number[]>`(
+            SELECT COALESCE(json_agg(presenter_id), '[]'::json)
+            FROM award_season_presenter
+            WHERE award_season_presenter.award_id = ${AwardsTable.id}
+        )`,
+        winners: sql<number[]>`(
+            SELECT COALESCE(json_agg(winner_id), '[]'::json)
+            FROM award_season_winner
+            WHERE award_season_winner.award_id = ${AwardsTable.id}
+          )`,
+      })
+      .from(AwardsTable)
+      .leftJoin(
+        AwardSeasonWinnerTable,
+        eq(AwardSeasonWinnerTable.awardId, AwardsTable.id)
+      );
   }
-  //   private async createAwardPresenters(
-  //       db: Transaction<Database>,
-  //       seasonId: number,
-  //       awardId: number,
-  //       presenters?: string[]
-  //   ): Promise<string[]> {
-  //     const result: string[] = [];
-  //     if (presenters && presenters.length) {
-  //       for await (const presenter of presenters) {
-  //         const response = await db.insertInto("award_season_presenter")
-  //             .values({
-  //               season_id: seasonId,
-  //               award_id: awardId,
-  //               presenter_id: +presenter,
-  //             })
-  //             .returning("presenter_id")
-  //             .executeTakeFirstOrThrow();
-  //         if (response && response.presenter_id) {
-  //           result.push(response.presenter_id.toString());
-  //         }
-  //       }
-  //     }
-  //     return Promise.resolve(result);
-  //   }
-  //   private async createAwardWinners(
-  //       db: Transaction<Database>,
-  //       seasonId: number,
-  //       awardId: number,
-  //       winners?: string[]
-  //   ): Promise<string[]> {
-  //     const result: string[] = [];
-  //     if (winners && winners.length) {
-  //       for await (const winner of winners) {
-  //         const response = await db.insertInto("award_season_winner")
-  //             .values({
-  //               season_id: seasonId,
-  //               award_id: awardId,
-  //               winning_user_id: +winner,
-  //             })
-  //             .returning("winning_user_id")
-  //             .executeTakeFirstOrThrow();
-  //         if (response && response.winning_user_id) {
-  //           result.push(response.winning_user_id.toString());
-  //         }
-  //       }
-  //     }
-  //     return Promise.resolve(result);
-  //   }
+
+  private async createAwardPresenters(
+    db: DBTransaction,
+    seasonId: number,
+    awardId: number,
+    presenters?: string[]
+  ): Promise<string[]> {
+    const result: string[] = [];
+    if (presenters && presenters.length) {
+      for await (const presenter of presenters) {
+        const response = await db
+          .insert(AwardSeasonPresenterTable)
+          .values({
+            seasonId,
+            awardId,
+            presenterId: +presenter,
+          })
+          .returning({
+            presenterId: AwardSeasonPresenterTable.presenterId,
+          })
+          .execute();
+
+        if (response && response.length) {
+          result.push(response[0].presenterId.toString());
+        }
+      }
+    }
+    return Promise.resolve(result);
+  }
+
+  private async createAwardWinners(
+    db: DBTransaction,
+    seasonId: number,
+    awardId: number,
+    winners?: string[]
+  ): Promise<string[]> {
+    const result: string[] = [];
+    if (winners && winners.length) {
+      for await (const winner of winners) {
+        const response = await db
+          .insert(AwardSeasonWinnerTable)
+          .values({
+            seasonId,
+            awardId,
+            winnerId: +winner,
+          })
+          .returning({ winnerId: AwardSeasonWinnerTable.winnerId })
+          .execute();
+
+        if (response && response.length) {
+          result.push(response[0].winnerId.toString());
+        }
+      }
+    }
+    return Promise.resolve(result);
+  }
 }

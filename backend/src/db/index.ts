@@ -4,6 +4,10 @@ import * as LeaguesSchema from "./schema/leagues";
 import * as UsersSchema from "./schema/users";
 
 const schema = { ...GamesSchema, ...LeaguesSchema, ...UsersSchema };
-export const db = drizzle<typeof schema>("http://localhost:5432/fhl_dev", {
+
+export type DBSchema = typeof schema;
+export type DBTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+export const db = drizzle<DBSchema>("http://localhost:5432/fhl_dev", {
   schema,
 });

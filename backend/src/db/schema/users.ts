@@ -6,7 +6,12 @@ import {
   text,
   primaryKey,
 } from "drizzle-orm/pg-core";
-import { AwardSeasonTable, LeaguesTable, SeasonsTable } from "./leagues";
+import {
+  AwardSeasonPresenterTable,
+  AwardSeasonWinnerTable,
+  LeaguesTable,
+  SeasonsTable,
+} from "./leagues";
 import { timestamps } from "../helpers/schema.helpers";
 import { relations } from "drizzle-orm";
 import { time } from "console";
@@ -97,13 +102,13 @@ export const UserTeamSeasonTable = pgTable(
 
 // ============= Relations ======================
 export const UsersRelations = relations(UsersTable, ({ one, many }) => ({
-  awardWinner: one(AwardSeasonTable, {
+  awardWinner: one(AwardSeasonWinnerTable, {
     fields: [UsersTable.id],
-    references: [AwardSeasonTable.winnerId],
+    references: [AwardSeasonWinnerTable.winnerId],
   }),
-  awardPresenter: one(AwardSeasonTable, {
+  awardPresenter: one(AwardSeasonPresenterTable, {
     fields: [UsersTable.id],
-    references: [AwardSeasonTable.presenterId],
+    references: [AwardSeasonPresenterTable.presenterId],
   }),
   teamPlayer: one(TeamSeasonTable, {
     fields: [UsersTable.id],

@@ -64,6 +64,34 @@
       "when": 1753153110038,
       "tag": "0008_purple_molly_hayes",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1754188233286,
+      "tag": "0009_blue_leopardon",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1754188670304,
+      "tag": "0010_seed-defaults",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1754271470597,
+      "tag": "0011_elite_sleeper",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1754271923362,
+      "tag": "0012_seed-more-defaults",
+      "breakpoints": true
     }
   ]
 }

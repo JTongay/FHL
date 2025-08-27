@@ -20,12 +20,16 @@ export const SeasonsTable = pgTable("seasons", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   isActive: boolean("is_active").notNull().default(false),
   leagueId: integer("league_id").notNull(),
+  ...timestamps,
 });
 
 export const AwardsTable = pgTable("awards", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: varchar().notNull(),
   description: text().notNull(),
+  leagueId: integer("league_id")
+    .notNull()
+    .references(() => LeaguesTable.id, { onDelete: "cascade" }),
   ...timestamps,
 });
 
@@ -33,7 +37,11 @@ export const EventsTable = pgTable("events", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   name: varchar().notNull().unique(),
   isActive: boolean("is_active").notNull().default(false),
-  leagueId: integer("league_id").notNull(),
+  leagueId: integer("league_id")
+    .notNull()
+    .references(() => LeaguesTable.id, {
+      onDelete: "cascade",
+    }),
   ...timestamps,
 });
 
@@ -43,7 +51,6 @@ export const AwardSeasonWinnerTable = pgTable(
     awardId: integer("award_id")
       .notNull()
       .references(() => AwardsTable.id),
-    // presenterId: integer("presenter_id").references(() => UsersTable.id),
     winnerId: integer("winner_id").references(() => UsersTable.id),
     seasonId: integer("season_id")
       .notNull()
@@ -66,6 +73,37 @@ export const AwardSeasonPresenterTable = pgTable(
       .references(() => SeasonsTable.id),
   },
   (t) => [primaryKey({ columns: [t.awardId, t.presenterId, t.seasonId] })]
+);
+
+export const TitlesTable = pgTable("titles", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  name: varchar().notNull(),
+  description: text().notNull(),
+  leagueId: integer("league_id")
+    .notNull()
+    .references(() => LeaguesTable.id, { onDelete: "cascade" }),
+  ...timestamps,
+});
+
+export const UserTitleTable = pgTable(
+  "user_title",
+  {
+    titleId: integer("title_id")
+      .notNull()
+      .references(() => TitlesTable.id),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => UsersTable.id),
+    current: boolean("current").notNull().default(true),
+    defeatedUserId: integer("defeated_user_id")
+      .references(() => UsersTable.id, { onDelete: "cascade" })
+      .default(null),
+    eventId: integer("event_id")
+      .notNull()
+      .references(() => EventsTable.id, { onDelete: "cascade" }),
+    ...timestamps,
+  },
+  (t) => [primaryKey({ columns: [t.titleId, t.userId] })]
 );
 
 export const LeaguesRelations = relations(LeaguesTable, ({ many }) => ({

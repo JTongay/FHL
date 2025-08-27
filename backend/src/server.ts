@@ -12,6 +12,9 @@ import { FHLContext } from "./domain/FHLContext";
 import { UserDatasource } from "./datasources/UserDatasource";
 import { UnionResolvers } from "./graphql/resolvers/UnionResolvers";
 import { TeamDatasource } from "./datasources/TeamDatasource";
+import { SeasonDatasource } from "./datasources/SeasonDatasource";
+import { LeagueDatasource } from "./datasources/LeagueDatasource";
+import { AwardDatasource } from "./datasources/AwardDatasource";
 
 function loadFHLSchema() {
   return loadSchemaSync("src/graphql/schema/**/*.graphql", {
@@ -52,6 +55,9 @@ export async function startServer() {
           datasources: {
             userDatasource: new UserDatasource(),
             teamDatasource: new TeamDatasource(),
+            seasonDatasource: new SeasonDatasource(),
+            leagueDatasource: new LeagueDatasource(),
+            awardDatasource: new AwardDatasource(),
           },
         };
       },

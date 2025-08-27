@@ -56,13 +56,15 @@ export class ChampionLineageParams implements Pagination {
 }
 
 export type TitleChangeQuery = {
-  id: number;
+  winnerId: number;
+  loserId: number;
+  titleId: number;
   name: string;
-  created_at: Date;
-  updated_at: Date;
   description: string;
-  event_id: number;
-  league_id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  eventId: number;
+  leagueId: number;
 };
 
 export class TitleChange {
@@ -72,16 +74,16 @@ export class TitleChange {
   title: Title;
 
   constructor(query: TitleChangeQuery) {
-    this.eventId = query.event_id.toString();
-    this.winnerId = query.id.toString();
-    this.loserId = query.id.toString();
+    this.eventId = query.eventId.toString();
+    this.winnerId = query.winnerId.toString();
+    this.loserId = query.loserId.toString();
     this.title = new Title({
-      id: query.id,
+      id: query.titleId,
       name: query.name,
       description: query.description,
-      created_at: query.created_at,
-      league_id: query.league_id,
-      updated_at: query.updated_at,
+      created_at: query.createdAt,
+      league_id: query.leagueId,
+      updated_at: query.updatedAt,
     });
   }
 }
