@@ -327,7 +327,23 @@ export class LeagueDatasource {
 
   async getEvents(pagination: Pagination): Promise<EventsList | ApiError> {
     try {
-      const total = await db.select().from(EventsTable);
+      const total = await db
+        .select({
+          count: count(),
+        })
+        .from(EventsTable)
+        .execute();
+
+      const response = await db
+        .select()
+        .from(EventsTable)
+        .limit(pagination.limit)
+        .offset(pagination.offset)
+        .execute();
+
+      const mapped = response.map((event) => new Event(event));
+
+      return new EventsList(pagination, total[0].count, mapped);
     } catch (error) {
       return new ApiError(500, error.message);
     }

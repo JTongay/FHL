@@ -117,4 +117,8 @@ export class TeamDatasource {
       return new ApiError(321, e.toString());
     }
   }
+
+  public async something() {
+    const test: string = "";
+  }
 }

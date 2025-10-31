@@ -5,6 +5,8 @@
 // import { Pagination } from "@/util";
 // import { fhlDb } from "@fhl/core/src/db";
 
+import { BaseResolver } from "@/resolvers/base/BaseResolver";
+
 // export class EventsResolver extends BaseResolver {
 //     protected async resolver(
 //         parent: never,
@@ -19,6 +21,9 @@
 //                 .executeTakeFirstOrThrow()
 //             const response = await fhlDb.selectFrom("events")
 //                 .selectAll()
+//
+//
+//
 //                 .limit(args.limit)
 //                 .offset(args.offset)
 //                 .execute()
@@ -29,3 +34,5 @@
 //         }
 //     }
 // }
+
+export class EventsResolver extends BaseResolver {}
