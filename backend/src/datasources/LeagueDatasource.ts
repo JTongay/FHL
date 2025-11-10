@@ -368,17 +368,16 @@ export class LeagueDatasource {
     }
   }
 
-  // public async updateEvent(input: UpdateEventInput): Promise<Event> {
-  //   const response = await fhlDb
-  //     .updateTable("events")
-  //     .set({
-  //       is_active: input.isActive,
-  //       name: input.name,
-  //       league_id: +input.leagueId,
-  //     })
-  //     .where("id", "=", +input.id)
-  //     .returningAll()
-  //     .executeTakeFirstOrThrow();
-  //   return new Event(response);
-  // }
+  public async updateEvent(params: UpdateEventInput): Promise<Event> {
+    const response = await db.update(EventsTable).set({
+      isActive: true,
+      name: params.name,
+      leagueId: +params.leagueId
+    }).where(eq(EventsTable.id, +params.id))
+      .returning()
+      .execute()
+
+    return new Event(response[0])
+
+  }
 }

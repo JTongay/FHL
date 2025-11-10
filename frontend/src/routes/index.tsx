@@ -14,6 +14,49 @@ export const TestQuery = graphql(`
   }
 `)
 
+export const DashboardQuery = graphql(`
+  query Dashboard {
+  fhl {
+    __typename
+    league {
+      id
+      name
+      createdAt
+      updatedAt
+    }
+    activeSeason {
+      id
+      isActive
+      year
+    }
+    currentChampion {
+      id
+      firstName
+      lastName
+      fullName
+      gamertag
+      wins
+      losses
+    }
+    # upcomingSeason {
+
+    # }
+    topFiveRecords {
+      id
+      gamertag
+      wins
+      losses
+    }
+    bottomFiveRecords {
+      id
+      gamertag
+      wins
+      losses
+    }
+  }
+}
+`)
+
 function App() {
   const { data, error, isLoading } = useQuery({
     queryKey: ['booyah'],

@@ -15,6 +15,7 @@ import { TeamDatasource } from "./datasources/TeamDatasource";
 import { SeasonDatasource } from "./datasources/SeasonDatasource";
 import { LeagueDatasource } from "./datasources/LeagueDatasource";
 import { AwardDatasource } from "./datasources/AwardDatasource";
+import { StorylineDatasource } from "./datasources/StorylineDatasource";
 
 function loadFHLSchema() {
   return loadSchemaSync("src/graphql/schema/**/*.graphql", {
@@ -58,6 +59,7 @@ export async function startServer() {
             seasonDatasource: new SeasonDatasource(),
             leagueDatasource: new LeagueDatasource(),
             awardDatasource: new AwardDatasource(),
+            storylineDatasource: new StorylineDatasource()
           },
         };
       },
