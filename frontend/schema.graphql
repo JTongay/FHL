@@ -72,14 +72,6 @@ input CreateLeagueInput {
   name: String!
 }
 
-input CreateSeasonInput {
-  endDate: Date!
-  leagueId: ID!
-  setActive: Boolean!
-  startDate: Date!
-  year: Int!
-}
-
 input CreateSeasonTeamInput {
   captain: ID!
   id: ID!
@@ -189,7 +181,6 @@ type Mutation {
   """
   createFullSeason(input: CreateFullSeasonInput!): ID!
   createLeague(input: CreateLeagueInput!): LeagueResponse!
-  createSeason(input: CreateSeasonInput!): SeasonResponse!
   createStoryline(input: CreateStorylineInput!): StorylineResponse!
   createTeam(input: CreateTeamInput!): CreateTeamResponse!
   createTest(testInput: TestInput!): String! @deprecated(reason: "No longer supported")

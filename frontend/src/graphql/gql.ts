@@ -16,15 +16,21 @@ import * as types from './graphql';
  */
 type Documents = {
     "\n  query TestQuery {\n    booyah\n  }\n": typeof types.TestQueryDocument,
+    "\n  query Dashboard {\n  fhl {\n    __typename\n    league {\n      id\n      name\n      createdAt\n      updatedAt\n    }\n    activeSeason {\n      id\n      isActive\n      year\n    }\n    currentChampion {\n      id\n      firstName\n      lastName\n      fullName\n      gamertag\n      wins\n      losses\n    }\n    # upcomingSeason {\n\n    # }\n    topFiveRecords {\n      id\n      gamertag\n      wins\n      losses\n    }\n    bottomFiveRecords {\n      id\n      gamertag\n      wins\n      losses\n    }\n  }\n}\n": typeof types.DashboardDocument,
 };
 const documents: Documents = {
     "\n  query TestQuery {\n    booyah\n  }\n": types.TestQueryDocument,
+    "\n  query Dashboard {\n  fhl {\n    __typename\n    league {\n      id\n      name\n      createdAt\n      updatedAt\n    }\n    activeSeason {\n      id\n      isActive\n      year\n    }\n    currentChampion {\n      id\n      firstName\n      lastName\n      fullName\n      gamertag\n      wins\n      losses\n    }\n    # upcomingSeason {\n\n    # }\n    topFiveRecords {\n      id\n      gamertag\n      wins\n      losses\n    }\n    bottomFiveRecords {\n      id\n      gamertag\n      wins\n      losses\n    }\n  }\n}\n": types.DashboardDocument,
 };
 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query TestQuery {\n    booyah\n  }\n"): typeof import('./graphql').TestQueryDocument;
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query Dashboard {\n  fhl {\n    __typename\n    league {\n      id\n      name\n      createdAt\n      updatedAt\n    }\n    activeSeason {\n      id\n      isActive\n      year\n    }\n    currentChampion {\n      id\n      firstName\n      lastName\n      fullName\n      gamertag\n      wins\n      losses\n    }\n    # upcomingSeason {\n\n    # }\n    topFiveRecords {\n      id\n      gamertag\n      wins\n      losses\n    }\n    bottomFiveRecords {\n      id\n      gamertag\n      wins\n      losses\n    }\n  }\n}\n"): typeof import('./graphql').DashboardDocument;
 
 
 export function graphql(source: string) {

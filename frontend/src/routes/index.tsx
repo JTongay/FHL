@@ -57,6 +57,36 @@ export const DashboardQuery = graphql(`
 }
 `)
 
+const DashboardQueryKey = Symbol("DashboardQuery")
+
+function Dashboard() {
+  const { data, error, isLoading } = useQuery({
+    queryKey: [DashboardQueryKey],
+    queryFn: () => execute(DashboardQuery)
+  })
+
+  if (isLoading) {
+    return <div className="text-center">Loading...</div>
+  }
+
+  if (error) {
+    return (
+      <div className="text-center text-red-500">Error: {error.message}</div>
+    )
+  }
+
+  if (data) {
+    return (
+      <div>
+        <p>Got data!</p>
+        <p>{data.fhl.league.name}</p>
+      </div>
+    )
+  }
+
+  return null
+}
+
 function App() {
   const { data, error, isLoading } = useQuery({
     queryKey: ['booyah'],
@@ -75,6 +105,7 @@ function App() {
   return (
     <div className="text-center">
       <header className="min-h-screen flex flex-col items-center justify-center bg-[#282c34] text-white text-[calc(10px+2vmin)]">
+        <Dashboard />
         <img
           src={logo}
           className="h-[40vmin] pointer-events-none animate-[spin_20s_linear_infinite]"

@@ -1,5 +1,6 @@
-import dotenv from "dotenv";
-dotenv.config();
+// import dotenv from "dotenv";
+// dotenv.config();
+// process.loadEnvFile()
 
 import { startServer } from "./server.js";
 // import { logger } from "./utils/logger.js";

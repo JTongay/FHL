@@ -87,14 +87,6 @@ export type CreateLeagueInput = {
   name: Scalars['String']['input'];
 };
 
-export type CreateSeasonInput = {
-  endDate: Scalars['Date']['input'];
-  leagueId: Scalars['ID']['input'];
-  setActive: Scalars['Boolean']['input'];
-  startDate: Scalars['Date']['input'];
-  year: Scalars['Int']['input'];
-};
-
 export type CreateSeasonTeamInput = {
   captain: Scalars['ID']['input'];
   id: Scalars['ID']['input'];
@@ -225,7 +217,6 @@ export type Mutation = {
   /** Creates a season with the selected teams along with the selected captains */
   createFullSeason: Scalars['ID']['output'];
   createLeague: LeagueResponse;
-  createSeason: SeasonResponse;
   createStoryline: StorylineResponse;
   createTeam: CreateTeamResponse;
   /** @deprecated No longer supported */
@@ -268,11 +259,6 @@ export type MutationCreateFullSeasonArgs = {
 
 export type MutationCreateLeagueArgs = {
   input: CreateLeagueInput;
-};
-
-
-export type MutationCreateSeasonArgs = {
-  input: CreateSeasonInput;
 };
 
 
@@ -634,11 +620,16 @@ export type TestQueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type TestQueryQuery = { __typename?: 'Query', booyah: string };
 
+export type DashboardQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DashboardQuery = { __typename?: 'Query', fhl: { __typename: 'FHL', league: { __typename?: 'League', id: string, name: string, createdAt: any, updatedAt: any }, activeSeason?: { __typename?: 'Season', id: string, isActive: boolean, year: number } | null, currentChampion?: { __typename?: 'User', id: string, firstName: string, lastName: string, fullName: string, gamertag: string, wins: number, losses: number } | null, topFiveRecords: Array<{ __typename?: 'User', id: string, gamertag: string, wins: number, losses: number }>, bottomFiveRecords?: Array<{ __typename?: 'User', id: string, gamertag: string, wins: number, losses: number }> | null } };
+
 export class TypedDocumentString<TResult, TVariables>
   extends String
   implements DocumentTypeDecoration<TResult, TVariables>
 {
-  __apiType?: DocumentTypeDecoration<TResult, TVariables>['__apiType'];
+  __apiType?: NonNullable<DocumentTypeDecoration<TResult, TVariables>['__apiType']>;
   private value: string;
   public __meta__?: Record<string, any> | undefined;
 
@@ -648,7 +639,7 @@ export class TypedDocumentString<TResult, TVariables>
     this.__meta__ = __meta__;
   }
 
-  toString(): string & DocumentTypeDecoration<TResult, TVariables> {
+  override toString(): string & DocumentTypeDecoration<TResult, TVariables> {
     return this.value;
   }
 }
@@ -658,3 +649,42 @@ export const TestQueryDocument = new TypedDocumentString(`
   booyah
 }
     `) as unknown as TypedDocumentString<TestQueryQuery, TestQueryQueryVariables>;
+export const DashboardDocument = new TypedDocumentString(`
+    query Dashboard {
+  fhl {
+    __typename
+    league {
+      id
+      name
+      createdAt
+      updatedAt
+    }
+    activeSeason {
+      id
+      isActive
+      year
+    }
+    currentChampion {
+      id
+      firstName
+      lastName
+      fullName
+      gamertag
+      wins
+      losses
+    }
+    topFiveRecords {
+      id
+      gamertag
+      wins
+      losses
+    }
+    bottomFiveRecords {
+      id
+      gamertag
+      wins
+      losses
+    }
+  }
+}
+    `) as unknown as TypedDocumentString<DashboardQuery, DashboardQueryVariables>;

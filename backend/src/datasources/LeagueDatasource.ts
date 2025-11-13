@@ -44,12 +44,19 @@ export class LeagueDatasource {
   });
 
   public async getFHL(): Promise<League> {
-    const result = await db
-      .select()
-      .from(LeaguesTable)
-      .where(eq(LeaguesTable.name, "FHL"))
-      .execute();
-    return new League(result[0]);
+    try {
+      const result = await db
+        .select()
+        .from(LeaguesTable)
+        .where(eq(LeaguesTable.name, "FHL"))
+        .execute();
+
+      console.log(result, "result")
+      return new League(result[0]);
+
+    } catch (e) {
+      console.log(e, "ERROR")
+    }
   }
 
   public async getLeague(id: number): Promise<League | ApiError> {

@@ -5,6 +5,6 @@ export default defineConfig({
   schema: "./src/db/schema/*",
   dialect: "postgresql",
   dbCredentials: {
-    url: "http://localhost:5432/fhl_dev",
+    url: process.env.DATABASE_URL || 'postgresql://postgres:postgres@postgres:5432/fhl_dev',
   },
 });
