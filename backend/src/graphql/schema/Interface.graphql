@@ -1,0 +1,10 @@
+type ApiError {
+    code: Int!
+    stacktrace: String
+}
+
+interface PaginatedResponse {
+    offset: Int!
+    limit: Int!
+    total: Int!
+}

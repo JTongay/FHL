@@ -1,0 +1,15 @@
+import { FHLContext } from "@/domain/FHLContext";
+import { FHLLeague } from "@/domain/League";
+import { BaseResolver } from "@/resolvers/base/BaseResolver";
+
+export class FHLResolver extends BaseResolver {
+  protected async resolver(
+    parent: never,
+    args: never,
+    context: FHLContext
+  ): Promise<FHLLeague> {
+    const fhl = await context.datasources.leagueDatasource.getFHL();
+    console.log(fhl, "FHL")
+    return { league: fhl };
+  }
+}

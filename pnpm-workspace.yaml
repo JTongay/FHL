@@ -1,2 +1,16 @@
 packages:
-  - "packages/**/*"
+  - packages/**/*
+  - backend
+  - frontend
+catalog:
+  sst: 3.13.10
+onlyBuiltDependencies:
+  - "@apollo/protobufjs"
+  - aws-crt
+  - aws-sdk
+  - browser-tabs-lock
+  - core-js
+  - core-js-pure
+  - esbuild
+  - unrs-resolver
+  - yarn

@@ -1,0 +1,123 @@
+type League {
+  id: ID!
+  teams: [Team!]!
+  team(id: ID!): Team
+  name: String!
+  currentChampion: User
+  titleLineage(limit: Int, offset: Int, order: Order): [TitleChange!]!
+  seasons: [Season!]!
+  createdAt: Date!
+  updatedAt: Date!
+}
+
+type TitleChange {
+  id: ID!
+  title: Title!
+
+  winner: UserResponse!
+  loser: UserResponse!
+  event: Event!
+}
+
+type Title {
+  id: ID!
+  name: String!
+  description: String!
+  createdAt: Date!
+  updatedAt: Date!
+}
+
+type Event {
+  id: ID!
+  name: String!
+  isActive: Boolean!
+  games(limit: Int, offset: Int): [Game!]!
+  #     createdAt: Date!
+  #     updatedAt: Date!
+}
+
+type EventsList implements PaginatedResponse {
+  total: Int!
+  data: [Event!]!
+  offset: Int!
+  limit: Int!
+}
+
+type Award {
+  id: ID!
+  name: String!
+  description: String
+  createdAt: Date!
+  updatedAt: Date!
+  winners: [User!]!
+  presenters: [User!]!
+  season: Season!
+}
+
+type AwardsList implements PaginatedResponse {
+  total: Int!
+  data: [Award!]!
+  offset: Int!
+  limit: Int!
+}
+
+type Team {
+  id: ID!
+  name: String! # Enum perhaps?
+  wins: Int!
+  losses: Int!
+  createdAt: Date!
+  updatedAt: Date!
+  captain: User!
+  members: [User!]!
+}
+
+input CreateLeagueInput {
+  name: String!
+}
+
+input CreateAwardInput {
+  name: String!
+  seasonId: ID!
+  description: String
+  winningUserIds: [ID!]
+  presentingUserIds: [ID!]
+}
+
+input CreateTeamInput {
+  name: String!
+  leagueId: ID!
+}
+
+input AddTeamToSeasonInput {
+  captainId: ID!
+  seasonId: ID!
+  teamId: ID!
+}
+
+input UpdateTeamInput {
+  teamId: ID!
+  name: String!
+}
+
+input CreateEventInput {
+  leagueId: ID!
+  isActive: Boolean!
+  name: String
+}
+
+input UpdateEventInput {
+  id: ID!
+  leagueId: ID!
+  isActive: Boolean!
+  name: String
+}
+
+union LeagueResponse = ApiError | League
+union EventResponse = ApiError | Event
+union EventsResponse = ApiError | EventsList
+union AwardResponse = ApiError | Award
+union AwardsResponse = ApiError | AwardsList
+union TeamResponse = ApiError | Team
+union CreateTeamResponse = ApiError | Team
+union UpdateTeamResponse = ApiError | Team

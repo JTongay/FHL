@@ -1,17 +1,22 @@
-import { SSTConfig } from "sst";
-import { FHLDB } from "stacks/FHLDb.js";
-import { NextWeb } from "stacks/FHLWeb2.js";
-import { FHLApi } from "stacks/FHLApi.js";
+/// <reference path="./.sst/platform/config.d.ts" />
 
-export default {
-  config(_input) {
+export default $config({
+  app(input) {
     return {
       name: "fhl",
-      region: "us-east-1",
+      removal: input?.stage === "production" ? "retain" : "remove",
+      protect: ["production"].includes(input?.stage),
+      home: "aws",
     };
   },
 
-  stacks(app) {
-    app.stack(FHLDB).stack(FHLApi).stack(NextWeb);
+  async run() {
+    await import("./infra/FHLDb.js");
+    // await import("./infra/FHLApi.js");
+    await import("./infra/FHLWeb3.js");
+
+    return {
+      Region: aws.getRegionOutput().name,
+    };
   },
-} satisfies SSTConfig;
+});

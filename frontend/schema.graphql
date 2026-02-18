@@ -1,0 +1,383 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+input AddTeamToSeasonInput {
+  captainId: ID!
+  seasonId: ID!
+  teamId: ID!
+}
+
+type ApiError {
+  code: Int!
+  stacktrace: String
+}
+
+type Award {
+  createdAt: Date!
+  description: String
+  id: ID!
+  name: String!
+  presenters: [User!]!
+  season: Season!
+  updatedAt: Date!
+  winners: [User!]!
+}
+
+union AwardResponse = ApiError | Award
+
+type AwardsList implements PaginatedResponse {
+  data: [Award!]!
+  limit: Int!
+  offset: Int!
+  total: Int!
+}
+
+union AwardsResponse = ApiError | AwardsList
+
+enum Console {
+  PC
+  PS4
+  PS5
+  SWITCH
+  XBOX
+}
+
+input CreateAwardInput {
+  description: String
+  name: String!
+  presentingUserIds: [ID!]
+  seasonId: ID!
+  winningUserIds: [ID!]
+}
+
+input CreateEventInput {
+  isActive: Boolean!
+  leagueId: ID!
+  name: String
+}
+
+"""
+Input type to create a season for a given league with the teams and team captains
+"""
+input CreateFullSeasonInput {
+  endDate: Date
+  leagueId: ID!
+  startDate: Date
+  teams: [CreateSeasonTeamInput!]!
+}
+
+input CreateLeagueInput {
+  name: String!
+}
+
+input CreateSeasonTeamInput {
+  captain: ID!
+  id: ID!
+}
+
+input CreateStorylineInput {
+  description: String!
+  seasonId: ID!
+  users: [ID!]!
+}
+
+input CreateTeamInput {
+  leagueId: ID!
+  name: String!
+}
+
+union CreateTeamResponse = ApiError | Team
+
+input CreateUserInput {
+  email: String!
+  firstName: String!
+  gamertag: String!
+  lastName: String!
+}
+
+scalar Date
+
+input DeleteSeasonInput {
+  id: ID!
+}
+
+input DeleteStorylineInput {
+  id: ID!
+}
+
+"""Input type that can add or remove a player from a team during a season"""
+input DraftPlayerInput {
+  playerId: ID!
+  seasonId: ID!
+  teamId: ID!
+}
+
+type Event {
+  games(limit: Int, offset: Int): [Game!]!
+  id: ID!
+  isActive: Boolean!
+  name: String!
+}
+
+union EventResponse = ApiError | Event
+
+type EventsList implements PaginatedResponse {
+  data: [Event!]!
+  limit: Int!
+  offset: Int!
+  total: Int!
+}
+
+union EventsResponse = ApiError | EventsList
+
+type FHL {
+  activeSeason: Season
+  bottomFiveRecords: [User!]
+  currentChampion: User
+  league: League!
+  topFiveRecords: [User!]!
+  upcomingSeason: Season
+}
+
+type Game {
+  availableOn: [Platform!]!
+  id: ID!
+  trailer: String!
+}
+
+union GameResponse = ApiError | Game
+
+type GamesList implements PaginatedResponse {
+  data: [Game!]!
+  limit: Int!
+  offset: Int!
+  total: Int!
+}
+
+union GamesResponse = ApiError | GamesList
+
+type League {
+  createdAt: Date!
+  currentChampion: User
+  id: ID!
+  name: String!
+  seasons: [Season!]!
+  team(id: ID!): Team
+  teams: [Team!]!
+  titleLineage(limit: Int, offset: Int, order: Order): [TitleChange!]!
+  updatedAt: Date!
+}
+
+union LeagueResponse = ApiError | League
+
+type Mutation {
+  addTeamToSeason(input: AddTeamToSeasonInput!): ID!
+  createAward(input: CreateAwardInput!): AwardResponse!
+  createEvent(input: CreateEventInput!): EventResponse!
+  """
+  Creates a season with the selected teams along with the selected captains
+  """
+  createFullSeason(input: CreateFullSeasonInput!): ID!
+  createLeague(input: CreateLeagueInput!): LeagueResponse!
+  createStoryline(input: CreateStorylineInput!): StorylineResponse!
+  createTeam(input: CreateTeamInput!): CreateTeamResponse!
+  createTest(testInput: TestInput!): String! @deprecated(reason: "No longer supported")
+  createUser(input: CreateUserInput!): UserResponse!
+  deleteSeason(input: DeleteSeasonInput!): Boolean!
+  deleteStoryline(input: DeleteStorylineInput!): Boolean!
+  """Drafts a player to a team. Typically occurs before the Season starts"""
+  draftPlayerToTeam(input: DraftPlayerInput!): ID!
+  """Removes a player from a team during a season"""
+  removePlayerFromTeam(input: DraftPlayerInput!): Boolean!
+  updateEvent(input: UpdateEventInput!): EventResponse!
+  updateSeason(input: UpdateSeasonInput!): SeasonResponse!
+  """Updates the storyline"""
+  updateStoryline(input: UpdateStorylineInput!): StorylineResponse!
+  updateTeam(input: UpdateTeamInput!): UpdateTeamResponse!
+  updateUser(input: UpdateUserInput!): UserResponse!
+}
+
+enum Order {
+  ASC
+  DESC
+}
+
+interface PaginatedResponse {
+  limit: Int!
+  offset: Int!
+  total: Int!
+}
+
+type Platform {
+  console: Console!
+  id: ID!
+  storeLink: String!
+}
+
+type Query {
+  booyah: String! @deprecated(reason: "No longer supported")
+  event(id: ID!): Event!
+  events(limit: Int!, offset: Int!): [Event!]!
+  """Entrypoint for the FHL specific dashboard"""
+  fhl: FHL!
+  game(id: ID!): GameResponse!
+  games(limit: Int!, offset: Int!): GamesResponse!
+  howdy(id: ID!): ID! @deprecated(reason: "No longer supported")
+  league(id: ID!): LeagueResponse!
+  leagues: [League!]!
+  season(id: ID!): SeasonResponse!
+  seasons(limit: Int!, offset: Int!): SeasonsResponse!
+  user(id: ID!): UserResponse!
+  users(limit: Int!, offset: Int!): UsersResponse!
+}
+
+type Season {
+  award(id: ID!): AwardResponse!
+  awards(limit: Int, offset: Int): AwardsResponse!
+  createdAt: Date!
+  endDate: Date!
+  games(limit: Int, offset: Int): [Game!]!
+  id: ID!
+  isActive: Boolean!
+  startDate: Date!
+  storyline(id: ID!): StorylineResponse!
+  storylines(limit: Int, offset: Int): StorylinesResponse!
+  """Gets specific team data for the season"""
+  team(id: ID!): TeamResponse!
+  """Gets a list of teams that played during the seasonn"""
+  teams: [Team!]!
+  updatedAt: Date!
+  year: Int!
+}
+
+union SeasonResponse = ApiError | Season
+
+type SeasonsList implements PaginatedResponse {
+  data: [Season!]!
+  limit: Int!
+  offset: Int!
+  total: Int!
+}
+
+union SeasonsResponse = ApiError | SeasonsList
+
+type Storyline {
+  createdAt: Date!
+  description: String!
+  id: ID!
+  updatedAt: Date!
+  users: UsersResponse!
+}
+
+union StorylineResponse = ApiError | Storyline
+
+type StorylinesList implements PaginatedResponse {
+  data: [Storyline!]!
+  limit: Int!
+  offset: Int!
+  total: Int!
+}
+
+union StorylinesResponse = ApiError | StorylinesList
+
+type Team {
+  captain: User!
+  createdAt: Date!
+  id: ID!
+  losses: Int!
+  members: [User!]!
+  name: String!
+  updatedAt: Date!
+  wins: Int!
+}
+
+union TeamResponse = ApiError | Team
+
+input TestInput {
+  age: Int!
+  name: String!
+}
+
+type Title {
+  createdAt: Date!
+  description: String!
+  id: ID!
+  name: String!
+  updatedAt: Date!
+}
+
+type TitleChange {
+  event: Event!
+  id: ID!
+  loser: UserResponse!
+  title: Title!
+  winner: UserResponse!
+}
+
+input UpdateEventInput {
+  id: ID!
+  isActive: Boolean!
+  leagueId: ID!
+  name: String
+}
+
+input UpdateSeasonInput {
+  endDate: Date!
+  id: ID!
+  setActive: Boolean!
+  startDate: Date!
+  year: Int!
+}
+
+input UpdateStorylineInput {
+  description: String!
+  id: ID!
+  users: [ID!]!
+}
+
+input UpdateTeamInput {
+  name: String!
+  teamId: ID!
+}
+
+union UpdateTeamResponse = ApiError | Team
+
+input UpdateUserInput {
+  email: String!
+  firstName: String!
+  gamertag: String!
+  lastName: String!
+  userId: ID!
+}
+
+type User {
+  avatar: String!
+  awards(limit: Int!, offset: Int!): AwardsResponse!
+  consolesOwned: [Console!]!
+  createdAt: Date!
+  currentTeam: Team
+  email: String!
+  firstName: String!
+  fullName: String!
+  gamertag: String!
+  id: ID!
+  lastName: String!
+  losses: Int!
+  teamHistory: [Team!]!
+  titleHistory: [TitleChange!]!
+  updatedAt: Date!
+  wins: Int!
+}
+
+union UserResponse = ApiError | User
+
+type UsersList implements PaginatedResponse {
+  data: [User!]!
+  limit: Int!
+  offset: Int!
+  total: Int!
+}
+
+union UsersResponse = ApiError | UsersList

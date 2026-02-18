@@ -1,0 +1,18 @@
+import { SSTConfig } from "sst";
+import { FHLDB } from "stacks/FHLDb.js";
+// import { NextWeb } from "stacks/FHLWeb2.js";
+import { FHLApi } from "stacks/FHLApi.js";
+import { FHLRRWeb } from "stacks/FHLWeb3.js";
+
+export default {
+  config(_input) {
+    return {
+      name: "fhl",
+      region: "us-east-1",
+    };
+  },
+
+  stacks(app) {
+    app.stack(FHLDB).stack(FHLApi).stack(FHLRRWeb);
+  },
+} satisfies SSTConfig;

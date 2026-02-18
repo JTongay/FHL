@@ -1,0 +1,27 @@
+scalar Date
+
+type Query {
+  booyah: String! @deprecated
+  howdy(id: ID!): ID! @deprecated
+  user(id: ID!): UserResponse!
+  users(limit: Int!, offset: Int!): UsersResponse!
+  leagues: [League!]!
+  league(id: ID!): LeagueResponse!
+  season(id: ID!): SeasonResponse!
+  seasons(limit: Int!, offset: Int!): SeasonsResponse!
+  event(id: ID!): Event!
+  events(limit: Int!, offset: Int!): [Event!]!
+  game(id: ID!): GameResponse!
+  games(limit: Int!, offset: Int!): GamesResponse!
+  "Entrypoint for the FHL specific dashboard"
+  fhl: FHL!
+}
+
+type FHL {
+  league: League!
+  activeSeason: Season
+  currentChampion: User
+  upcomingSeason: Season
+  topFiveRecords: [User!]!
+  bottomFiveRecords: [User!]
+}

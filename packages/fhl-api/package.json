@@ -58,7 +58,7 @@
     "hygen": "^6.2.11",
     "pg": "^8.11.3",
     "prettier": "^3.3.3",
-    "sst": "2.39.2",
+    "sst": "catalog:",
     "tsc-alias": "^1.8.7",
     "typescript": "^5.2.2"
   }

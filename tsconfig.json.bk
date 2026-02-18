@@ -1,0 +1,22 @@
+// {
+//   "exclude": ["packages"],
+//   "compilerOptions": {
+//     "allowSyntheticDefaultImports": true,
+//     // "moduleResolution": "node",
+//     "baseUrl": "./",
+//     "outDir": "dist",
+//     "paths": {
+//       "$/*": ["packages/core/*", "packages/fhl-api/*", "backend/*"]
+//     }
+//   },
+//   "compileOnSave": true,
+//   "tsc-alias": {
+//     "verbose": true,
+//     "resolveFullPaths": true,
+//     "replacers": {
+//       "base-url": {
+//         "enabled": true
+//       }
+//     }
+//   }
+// }

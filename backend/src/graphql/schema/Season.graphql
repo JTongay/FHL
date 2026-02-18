@@ -1,0 +1,94 @@
+type Season {
+  id: ID!
+  year: Int!
+  isActive: Boolean!
+  startDate: Date!
+  endDate: Date!
+  storyline(id: ID!): StorylineResponse!
+  storylines(limit: Int, offset: Int): StorylinesResponse!
+  awards(limit: Int, offset: Int): AwardsResponse!
+  award(id: ID!): AwardResponse!
+  games(limit: Int, offset: Int): [Game!]!
+  "Gets a list of teams that played during the seasonn"
+  teams: [Team!]!
+  "Gets specific team data for the season"
+  team(id: ID!): TeamResponse!
+  createdAt: Date!
+  updatedAt: Date!
+  ## schedule
+}
+
+type SeasonsList implements PaginatedResponse {
+  data: [Season!]!
+  limit: Int!
+  offset: Int!
+  total: Int!
+}
+
+type Storyline {
+  id: ID!
+  description: String!
+  createdAt: Date!
+  updatedAt: Date!
+  users: UsersResponse!
+}
+
+type StorylinesList implements PaginatedResponse {
+  data: [Storyline!]!
+  limit: Int!
+  offset: Int!
+  total: Int!
+}
+
+input UpdateSeasonInput {
+  id: ID!
+  year: Int!
+  setActive: Boolean!
+  startDate: Date!
+  endDate: Date!
+}
+
+input DeleteSeasonInput {
+  id: ID!
+}
+
+input CreateStorylineInput {
+  description: String!
+  seasonId: ID!
+  users: [ID!]!
+}
+
+input UpdateStorylineInput {
+  id: ID!
+  description: String!
+  users: [ID!]!
+}
+
+input DeleteStorylineInput {
+  id: ID!
+}
+
+"Input type that can add or remove a player from a team during a season"
+input DraftPlayerInput {
+  seasonId: ID!
+  teamId: ID!
+  playerId: ID!
+}
+
+"Input type to create a season for a given league with the teams and team captains"
+input CreateFullSeasonInput {
+  leagueId: ID!
+  teams: [CreateSeasonTeamInput!]!
+  startDate: Date
+  endDate: Date
+}
+
+input CreateSeasonTeamInput {
+  id: ID!
+  captain: ID!
+}
+
+union SeasonResponse = ApiError | Season
+union SeasonsResponse = ApiError | SeasonsList
+union StorylineResponse = ApiError | Storyline
+union StorylinesResponse = ApiError | StorylinesList
