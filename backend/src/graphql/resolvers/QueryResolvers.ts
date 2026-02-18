@@ -2,6 +2,7 @@ import { resolverMap } from "@/resolvers/base/ResolverMap";
 import { BooyahResolver } from "@/resolvers/Booyah.resolver";
 import { HowdyResolver } from "@/resolvers/Howdy.resolver";
 import { EventResolver } from "@/resolvers/league/event/Event.resolver";
+import { EventsResolver } from "@/resolvers/league/event/Events.resolver";
 import { FHLResolver } from "@/resolvers/league/fhl/FHL.resolver";
 import { LeagueResolver } from "@/resolvers/league/League.resolver";
 import { SeasonResolver } from "@/resolvers/season/Season.resolver";
@@ -21,7 +22,7 @@ export const QueryResolvers = resolverMap({
     season: new SeasonResolver(),
     seasons: new SeasonsResolver(),
     event: new EventResolver(),
-    // events: new EventsResolver(),
+    events: new EventsResolver(),
     fhl: new FHLResolver(),
   },
 });

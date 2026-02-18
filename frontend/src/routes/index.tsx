@@ -3,6 +3,9 @@ import logo from '../logo.svg'
 import { graphql } from '@/graphql'
 import { useQuery } from '@tanstack/react-query'
 import { execute } from '@/graphql/execute'
+import { Avatar, AvatarImage } from '@/components/ui/avatar'
+import { DashboardQueryKey } from '@/lib/queryKeys'
+import { CurrentChampion } from '@/components/CurrentChampion'
 
 export const Route = createFileRoute('/')({
   component: App,
@@ -57,7 +60,6 @@ export const DashboardQuery = graphql(`
 }
 `)
 
-const DashboardQueryKey = Symbol("DashboardQuery")
 
 function Dashboard() {
   const { data, error, isLoading } = useQuery({
@@ -77,9 +79,20 @@ function Dashboard() {
 
   if (data) {
     return (
-      <div>
-        <p>Got data!</p>
-        <p>{data.fhl.league.name}</p>
+      <div className="space-y-6">
+        <h1 className="text-2xl text-center">Welcome to {data.fhl.league.name}</h1>
+
+        <div className="flex flex-row justify-center">
+          <img className="w-1/2" src="/mlg-logo.png" alt="FHL Logo" />
+        </div>
+
+        <div>
+          <CurrentChampion />
+        </div>
+
+        {data.fhl.topFiveRecords.map((user) => (
+          <div>{user.gamertag}</div>
+        ))}
       </div>
     )
   }

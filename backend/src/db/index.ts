@@ -8,6 +8,6 @@ const schema = { ...GamesSchema, ...LeaguesSchema, ...UsersSchema };
 export type DBSchema = typeof schema;
 export type DBTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
-export const db = drizzle<DBSchema>("http://localhost:5432/fhl_dev", {
+export const db = drizzle<DBSchema>(process.env.DATABASE_URL, {
   schema,
 });

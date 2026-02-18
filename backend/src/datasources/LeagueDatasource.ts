@@ -43,6 +43,20 @@ export class LeagueDatasource {
     return ids.map((id) => leagueIdsToLeagueMap[id]);
   });
 
+  private batchEvents = new DataLoader(async (ids: number[]) => {
+    const eventsList = await db
+      .select()
+      .from(EventsTable).where(inArray(EventsTable.id, ids))
+      .execute()
+
+    const eventIdsToEventMap = eventsList.reduce((mapping, event) => {
+      mapping[event.id] = event
+      return mapping
+    }, {} as { [key: string]: SelectLeague })
+
+    return ids.map((id) => eventIdsToEventMap[id])
+  })
+
   public async getFHL(): Promise<League> {
     try {
       const result = await db
@@ -51,7 +65,7 @@ export class LeagueDatasource {
         .where(eq(LeaguesTable.name, "FHL"))
         .execute();
 
-      console.log(result, "result")
+      console.log(result[0], "result")
       return new League(result[0]);
 
     } catch (e) {

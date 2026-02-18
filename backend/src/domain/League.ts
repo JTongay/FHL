@@ -11,8 +11,8 @@ export class League {
   constructor(response: any) {
     this.id = response.id.toString();
     this.name = response.name;
-    this.createdAt = response.created_at;
-    this.updatedAt = response.updated_at;
+    this.createdAt = response.createdAt;
+    this.updatedAt = response.updatedAt;
   }
 }
 

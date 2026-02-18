@@ -4,21 +4,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Product Overview
 
-FHL is a gaming league ran by a group of friends. The application I intend on building here is a place to manage and view the league by managing players, teams, seasons, awards, and scheduling. Currently, we manage the league in discord through a bulletin of pinned events, scheduling peoples availability for games through spreadsheets, drafting players into teams offline through messages, and just random voice channel conversations. Ideally we would have a 1 stop shot for all of these things, with scheduling games having a high priority.
+FHL is a gaming league ran by a group of friends. The application I intend on building here is a place to manage and view the league's current and historical data by managing players, teams, seasons, awards, and scheduling. Currently, we manage the league in discord through a bulletin of pinned events, scheduling peoples availability for games through spreadsheets, drafting players into teams offline through messages, and just random voice channel conversations. Ideally we would have a 1 stop shot for all of these things, with scheduling games having a high priority.
 
 Generally speaking, the league goes as follows:
 
-- We have 1 commissioner who is also a player, and that commissioner sets the rules for pretty much everything.
-- There are roughly 20 players in the league
-- There is a season every year, where the season lasts about 6-8 months
-- Each season has at least 2 teams
-- There is 1 captain who is also a player on each team that drafts players
-- Every month is a showdown game where the teams set their lineups of players to compete against each other in a predetermined game. This is where the scheduling comes in
-- Before each showdown, there can be some scrimmage matches. This is also where the scheduling comes in
+- We have 1 commissioner, who is also a player, and that commissioner sets the rules for pretty much everything. The commissioner can also have a few other admins who can give input, but the commissioner has the final say.
+- There are roughly 20 players in the league, but that could either get bigger or smaller. Don't ever set a max number of players.
+- There is a season every year, where the season lasts about 6-8 months. The season can span within a calendar year or can span between 2 calendar years, so for example, one season can be from March to November, but another could span from September to April.
+- Each season has either 2 or 3 teams competing against each other historically, but never assume it'll only be that many
+- There is 1 captain, who is also a player, on each team that drafts players. The draft is a typically Dodgeball style, where each captain goes one at a time picking players that are available. The drafting order is determined via coinflip. Drafts can happen offline or online. This feature can be pretty basic for now, but we can expand on this in the future to make it more engaging and cool.
+- When a season is announced and the draft is complete, the commissioner announces the video games that will be played, in order, followed by the date and location of the Gauntlet. More details on the Gauntlet towards the end.
+- Every month is a showdown game where the teams set their lineups of players to compete against each other in a predetermined video game. The game selection is set by the commissioner, as well as in what order the games will be played.
+- Before each showdown, there can be some scrimmage matches, typically agreed on one day during the week.
+- It is up to the captains to select which players will competing in the showdown. They can choose themselves or some of the players on their team. A captain can also choose players as backups to play just in case anything happens. Once the players are selected, scheduling occurs.
+- For scheduling, each player puts in their availability in a 2 week window, where the player is available to play the game of the current showdown. The availability markers are, "available", "unavailable", and "preferred".
 - After all of the showdowns are over, we host a 2-3 night in person event called "The Gauntlet" where we take the results of the previous showdowns and gives the teams points towards the Gauntlet event in a marathon of games.
 - The particulars of the Gauntlet are not super important at this time
 
 Currently I am in the process of deprecating all of the SST stuff, so anything inside the `infra` and `packages` directories you can ignore for now.
+
+## Main Goals
 
 ## Project Structure
 
@@ -47,9 +52,6 @@ cd backend && pnpm dev
 # Build the entire project
 pnpm build
 
-# Deploy to test environment
-pnpm deploy:test
-
 # Deploy to production
 pnpm deploy:prod
 
@@ -60,9 +62,6 @@ pnpm typecheck
 ### Database Operations
 
 ```bash
-# Generate new migration
-pnpm gen migration new <MigrationName>
-
 # Generate Drizzle schema
 cd backend && pnpm db:generate
 
@@ -111,7 +110,6 @@ cd frontend && pnpx shadcn@latest add <component>
 - `backend/src/db/schema/`: Database schema definitions
 - `frontend/src/routes/`: File-based routing structure
 - `frontend/src/components/`: Reusable UI components
-- `infra/`: AWS infrastructure definitions using SST
 
 ## Database Schema
 
@@ -123,5 +121,5 @@ cd frontend && pnpx shadcn@latest add <component>
 
 - Use shadcn/ui for new components: `pnpx shadcn@latest add <component>`
 - GraphQL schema files are in `backend/src/graphql/schema/`
-- Frontend uses GraphQL codegen for type-safe queries
-- SST handles AWS deployment and local development environment
+- Frontend uses GraphQL codegen for type-safe queries.
+- ALWAYS use TypeScript and NEVER use an `any` type.

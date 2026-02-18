@@ -8,8 +8,8 @@ export class FHLResolver extends BaseResolver {
     args: never,
     context: FHLContext
   ): Promise<FHLLeague> {
-    console.log("GETTING FHL")
     const fhl = await context.datasources.leagueDatasource.getFHL();
+    console.log(fhl, "FHL")
     return { league: fhl };
   }
 }
