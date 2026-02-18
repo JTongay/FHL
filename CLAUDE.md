@@ -8,24 +8,65 @@ FHL is a gaming league ran by a group of friends. The application I intend on bu
 
 Generally speaking, the league goes as follows:
 
-- We have 1 commissioner, who is also a player, and that commissioner sets the rules for pretty much everything. The commissioner can also have a few other admins who can give input, but the commissioner has the final say.
-- There are roughly 20 players in the league, but that could either get bigger or smaller. Don't ever set a max number of players.
-- There is a season every year, where the season lasts about 6-8 months. The season can span within a calendar year or can span between 2 calendar years, so for example, one season can be from March to November, but another could span from September to April.
-- Each season has either 2 or 3 teams competing against each other historically, but never assume it'll only be that many
-- There is 1 captain, who is also a player, on each team that drafts players. The draft is a typically Dodgeball style, where each captain goes one at a time picking players that are available. The drafting order is determined via coinflip. Drafts can happen offline or online. This feature can be pretty basic for now, but we can expand on this in the future to make it more engaging and cool.
-- When a season is announced and the draft is complete, the commissioner announces the video games that will be played, in order, followed by the date and location of the Gauntlet. More details on the Gauntlet towards the end.
-- Every month is a showdown game where the teams set their lineups of players to compete against each other in a predetermined video game. The game selection is set by the commissioner, as well as in what order the games will be played.
-- Before each showdown, there can be some scrimmage matches, typically agreed on one day during the week.
-- It is up to the captains to select which players will competing in the showdown. They can choose themselves or some of the players on their team. A captain can also choose players as backups to play just in case anything happens. Once the players are selected, scheduling occurs.
-- For scheduling, each player puts in their availability in a 2 week window, where the player is available to play the game of the current showdown. The availability markers are, "available", "unavailable", and "preferred".
-- After all of the showdowns are over, we host a 2-3 night in person event called "The Gauntlet" where we take the results of the previous showdowns and gives the teams points towards the Gauntlet event in a marathon of games.
+- We have 1 commissioner, who is also a player, and that commissioner sets the
+  rules for pretty much everything. The commissioner can also have a few other admins
+  who can give input, but the commissioner has the final say.
+- There are roughly 20 players in the league, but that could either get bigger or
+  smaller. Don't ever set a max number of players.
+- There is a season every year, where the season lasts about 6-8 months. The
+  season can span within a calendar year or can span between 2 calendar years, so
+  for example, one season can be from March to November, but another could span
+  from September to April.
+- Each season has either 2 or 3 teams competing against each other historically,
+  but never assume it'll only be that many.
+- There is 1 captain, who is also a player, on each team that drafts players.
+  The draft is a typically Dodgeball style, where each captain goes one at a time
+  picking players that are available. The drafting order is determined via coin
+  flip. Drafts can happen offline or online. This feature can be pretty basic for
+  now, but we can expand on this in the future to make it more engaging and cool.
+- When a season is announced and the draft is complete, the commissioner announces
+  the video games that will be played, in order, followed by the date and location
+  of the Gauntlet. More details on the Gauntlet towards the end.
+- Every month is a showdown game where the teams set their lineups of players to
+  compete against each other in a predetermined video game. The game selection
+  is set by the commissioner, as well as in what order the games will be played.
+- Before each showdown, there can be some scrimmage matches, typically agreed
+  on one day during the week.
+- It is up to the captains to select which players will competing in the showdown.
+  They can choose themselves or some of the players on their team. A captain can
+  also choose players as backups to play just in case anything happens. Once the
+  players are selected, scheduling occurs.
+- For scheduling, each player puts in their availability in a 2 week window, where
+  the player is available to play the game of the current showdown. The availability
+  markers are, "available", "unavailable", and "preferred". We start with just
+  asking the players to select the days they are available from every day in that
+  2 week span, but sometimes we'll get granular about time in 1 hour increments.
+- After all of the showdowns are over, we host a 2-3 night in person event called
+  "The Gauntlet" where we take the results of the previous showdowns and gives the
+  teams points towards the Gauntlet event in a marathon of games.
 - The particulars of the Gauntlet are not super important at this time
-
-Currently I am in the process of deprecating all of the SST stuff, so anything inside the `infra` and `packages` directories you can ignore for now.
 
 ## Main Goals
 
+The following is a list of the top priorities of this project
+
+- Create Logins/Signup only with Discord OAuth.
+- Create a historical record of the league, keeping track of:
+  - The results of each season
+  - A teams historical win/loss record, along with seasons won
+  - Players individual win/loss record
+  - Having a dashboard to show top 5 and bottom 5 records
+- Lineage of award winners
+- Lineage of the championship belt as a separate entity of the league
+- League drafting section to host live/offline drafts
+- Showdown scheduler with reminders for players to submit their availability
+  and an automatic day selection based on preferred dates and availability.
+- Keep track of all of the storylines, that we will eventually do something with.
+
 ## Project Structure
+
+Currently I am in the process of deprecating all of the SST stuff, so anything
+inside the `infra` and `packages` directories you can ignore for now.
 
 FHL is a gaming league for my friend group:
 
@@ -33,6 +74,7 @@ FHL is a gaming league for my friend group:
 - **Frontend**: React with Vite, TanStack Router, TanStack Query, Clerk auth, Tailwind CSS
 - **Infrastructure**: AWS deployment via SST (Serverless Stack)
 - **Database**: PostgreSQL with Drizzle ORM migrations
+- Auth: Clerk for Authentication
 
 ## Common Commands
 
@@ -44,19 +86,6 @@ cd frontend && pnpm dev
 
 # Backend development server
 cd backend && pnpm dev
-```
-
-### Build & Deploy
-
-```bash
-# Build the entire project
-pnpm build
-
-# Deploy to production
-pnpm deploy:prod
-
-# Type checking
-pnpm typecheck
 ```
 
 ### Database Operations
